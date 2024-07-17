@@ -1,0 +1,120 @@
+{% extends 'layout.html' %}
+{% block title %}Manager Dashboard{% endblock %}
+{% block head %}
+<link href="{{ url_for('manager.static', filename='css/manager_dashboard_style.css') }}" rel="stylesheet">
+{% endblock %}
+
+
+{% block navbar %}
+<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+  <li class="nav-item"><a class="nav-link text-success fw-bold"><span class="ms-1">Admin Dashboard</span></a></li>
+</ul>
+<div class="text-end">
+  <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-success me-2">Logout</button></a>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Sidebar -->
+<div class="sidebar">
+  <a href="{{ url_for('manager.manager_dashboard') }}"><span><i class="fas fa-home"></i>Dashboard</span></a>
+  <a href="{{ url_for('manager.manager_profile') }}"><span><i class="fas fa-user-circle"></i>Profile</span></a>
+  <a href="{{ url_for('manager.track_payment') }}"><span><i class="fa-solid fa-cash-register"></i>Payment Tracking</span></a>
+  <a href="{{ url_for('manager.member_list') }}"><span><i class="fa-solid fa-users"></i>Member List</span></a>
+  <a href="{{ url_for('manager.therapist_list') }}"><span><i class="fa-solid fa-spa"></i>Therapist List</span></a>
+  <div class="menu-item">
+    <a class="submenu-toggle"><span><i class="fa-regular fa-file"></i>Schedule</span></a>
+    <div class="submenu">
+      <a href="{{ url_for('news_timetable.timetable_management') }}"><span>Class Schedule</span></a>
+      <a href="{{ url_for('manager.session_schedule') }}"><span>Session Schedule</span></a>
+      <a href="{{ url_for('manager.attendance_record') }}"><span>Record Attendance</span></a>
+    </div>
+  </div>
+  <div class="menu-item">
+    <a class="submenu-toggle"><span><i class="fa-regular fa-file"></i>Report</span></a>
+    <div class="submenu">
+      <a href="{{ url_for('manager.attendance_report')}}"><span>Attendance Report</span></a>
+      <a href="{{ url_for('manager.popular_class_report') }}"><span>Class Report</span></a>
+      <a href="{{ url_for('manager.financial_report')}}"><span>Financial Report</span></a>
+    </div>
+  </div>
+  <div class="menu-item">
+    <a class="submenu-toggle"><span><i class="fa-solid fa-bars-progress"></i>Other Management</span></a>
+    <div class="submenu">
+      <a href="{{ url_for('news_timetable.news') }}"><span>News</span></a>
+      <a href="{{ url_for('manager.manage_room') }}"><span>Room</span></a>
+      <a href="{{ url_for('manager.manage_class_type') }}"><span>Class Type</span></a>
+      <a href="{{ url_for('manager.manage_therapeutic_type') }}"><span>Session Type</span></a>
+      <a href="{{ url_for('manager.manage_price') }}"><span>Prices</span></a>
+    </div>
+  </div>
+</div>
+
+<section class="main-content mt-5">
+  <div class="col-lg-6 col-md-8 mx-auto">
+    <h1 class="fw-light my-0 text-center" >Welcome Back!</h1>
+  </div>
+  <div class="row row-cols-1 align-items-stretch g-4 py-5">
+    <div class="col">
+        <a href="{{ url_for('manager.member_list') }}" class="text-decoration-none">
+            <div class="card card-cover h-100 overflow-hidden rounded-4 shadow-lg" 
+                style="background-image: url('{{ url_for('static', filename = 'image/1_membership.jpg')}}');">
+                <div class="d-flex flex-column h-100 p-5 pb-3 text-light text-shadow-1">
+                    <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Manage Member</h3>
+                </div>
+            </div>
+        </a>
+    </div>
+  </div>
+
+<div class="row row-cols-1 row-cols-lg-2 align-items-stretch g-4 py-5">
+  <div class="col">
+      <a href="{{ url_for('manager.session_schedule') }}" class="text-decoration-none">
+          <div class="card card-cover h-100 overflow-hidden rounded-4 shadow-lg" 
+              style="background-image: url('{{ url_for('static', filename = 'image/2_booking_details.jpg')}}');">
+              <div class="d-flex flex-column h-100 p-5 pb-3 text-light text-shadow-1">
+                  <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Manage Sessions</h3>
+              </div>
+          </div>
+      </a>
+  </div>
+
+  <div class="col">
+    <a href="{{ url_for('news_timetable.timetable_management') }}" class="text-decoration-none">
+      <div class="card card-cover h-100 overflow-hidden rounded-4 shadow-lg" 
+          style="background-image: url('{{ url_for('static', filename = 'image/3_class.jpg')}}');">
+        <div class="d-flex flex-column h-100 p-5 pb-3 text-light text-shadow-1">
+            <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold"> Manage Class </h3>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+<div class="row row-cols-1 row-cols-lg-2 align-items-stretch g-4 py-5">
+    <div class="col">
+        <a href="{{ url_for('manager.financial_report')}}" class="text-decoration-none">
+            <div class="card card-cover h-100 overflow-hidden rounded-4 shadow-lg" 
+                style="background-image: url('{{ url_for('static', filename = 'image/4_report.jpg')}}');">
+                <div class="d-flex flex-column h-100 p-5 pb-3 text-light text-shadow-1">
+                    <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">View Financial Reports</h3>
+                </div>
+            </div>
+        </a>
+    </div>
+  
+    <div class="col">
+      <a href="{{ url_for('news_timetable.news') }}" class="text-decoration-none">
+        <div class="card card-cover h-100 overflow-hidden rounded-4 shadow-lg" 
+            style="background-image: url('{{ url_for('static', filename = 'image/6_news.jpg')}}');">
+          <div class="d-flex flex-column h-100 p-5 pb-3 text-light text-shadow-1">
+              <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold"> Edit News </h3>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</section>                     
+{% endblock %}
+
+

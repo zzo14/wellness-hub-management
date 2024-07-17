@@ -1,0 +1,20 @@
+{% if role == 'member' %}
+{% include 'member_navbar.html' %}
+{% elif role == 'therapist' %}
+{% include 'therapist_navbar.html' %}
+{% elif role == 'manager' %}
+{% include 'manager_navbar.html' %}
+{% else %}
+<div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav mb-2 mb-lg-0">
+      <li class="nav-item"><a href="{{ url_for('home.home') }}" class="nav-link px-2 text-success">Home</a></li>
+      <li class="nav-item"><a href="{{ url_for('news_timetable.timetable') }}" class="nav-link px-2 text-success">Class</a></li>
+      <li class="nav-item"><a href="{{ url_for('member.therapist_list') }}" class="nav-link px-2 text-success">Therapist</a></li>
+      <li class="nav-item"><a href="{{ url_for('home.price') }}" class="nav-link px-2 text-success">Memberships</a></li>
+      <li class="nav-item"><a href="{{ url_for('news_timetable.news') }}" class="nav-link px-2 text-success">News</a></li>
+    </ul>
+  </div>
+  <div class="text-end">
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-success me-2">Go Home</button></a>
+  </div>
+{% endif %}

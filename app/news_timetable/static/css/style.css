@@ -1,0 +1,265 @@
+/* calendar */
+#calendar {
+  max-width: auto;
+  max-height: 600px;
+  margin:0 auto;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+/* calendar toolbar  */
+.fc {
+border-radius: 15px; 
+overflow: hidden; 
+}
+
+.fc .fc-header-toolbar {
+margin-top: 20px;
+padding-left: 10px;
+padding-right: 10px;
+}
+
+
+.fc .fc-toolbar-title {
+font-size: 30px;
+font-weight: normal; 
+color:#198754
+}
+
+/* calendar toolbar button */
+.fc .fc-button-primary {
+background-color: #198754; 
+color: white;
+}
+
+.fc .fc-button:hover {
+background-color: #1C5333; 
+}
+
+.fc-button-primary:not(:disabled):active, .fc-button-primary:not(:disabled).fc-button-active {
+background-color: #1C5333 !important; /* when the button is clicked on (active) */
+color: white !important;
+}
+
+.fc .fc-button-today {
+color: #198754; 
+background-color: white;
+}
+
+.fc .fc-today-button:disabled {
+background-color: #1C5333; 
+}
+
+.fc .fc-day-today {
+background-color: #E2FEF1; /* today's date cell */
+}
+
+/* weekday header labels */
+.fc .fc-col-header-cell-cushion { 
+  font-weight: lighter;
+  font-size: 15px;
+  padding: 5px;
+  text-decoration: none;
+  color: white;
+}
+.fc .fc-col-header-cell {
+  background-color: #198754;
+  border: 1px solid #198754;
+}
+/* change event titles to black and remove underline */
+.fc .fc-event-title, .fc .fc-event-title-container {
+  color: black;
+  text-decoration: none;
+}
+/* change day and time to black and remove underline */
+.fc .fc-daygrid-day-number, .fc .fc-daygrid-event, .fc .fc-timegrid-event {
+  color: black;
+  text-decoration: none;
+}
+
+/* grid icon color */
+.fc .fc-daygrid-event-dot {
+border-color: #198754 !important; /* This sets the color of the dot */
+}
+
+.fc .fc-event-main {
+background-color: #198754 !important; /* This sets the background color of the event block */
+}
+
+/* table */
+.table {
+width: 100%; 
+table-layout: fixed; 
+}
+
+.table th, .table td {
+text-align: center; 
+vertical-align: middle; 
+}
+
+.table-hover thead th {
+text-align: center; 
+color: white; 
+background-color: #198754;
+font-size: medium; 
+}
+
+.rounded-shadow {
+border-collapse: separate;
+border-spacing: 0;
+border-radius: 15px;
+overflow: hidden; 
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.form-label {
+color:#198754
+}
+
+.button-container {
+display: flex;
+justify-content: flex-end;
+}
+
+.btn-spacing {
+margin-right: 15px;
+}
+
+.action-buttons {
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.icon-color {
+color: #198754;
+}
+
+.action-buttons {
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 50px;
+}
+
+/* End - table */
+
+/* page selection*/
+.pagination .page-item.active .page-link {
+background-color: #198754;
+border-color: #198754;
+color: white;
+}
+
+.page-link {
+color: black; 
+}
+
+.page-link:hover {
+color: black !important;
+}
+
+/* End - page selection */
+
+.form-select:focus {
+border-color: #198754; 
+box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25); 
+}
+
+.form-control:focus {
+  border-color: #198754; 
+  box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25); 
+  }
+
+/* news */
+.truncate-text {
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+display: block;
+}
+
+/* checkbox style */
+:root {
+  --checkbox-checked-color: #198754; 
+  --checkbox-unchecked-color: #198754; 
+}
+
+.form-check-input:checked {
+  background-color: var(--checkbox-checked-color);
+  border-color: var(--checkbox-checked-color);
+}
+
+.form-check-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25); 
+}
+
+.form-check-input:focus:before {
+  box-shadow: none; 
+  }
+
+.form-check-input:focus:checked {
+box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25); 
+}
+/* End - checkbox style */
+
+/* flash message */
+#flash-messages {
+  position: fixed;
+  top: 70px;
+  right: 0;
+  z-index: 1000;
+  width: 30%;
+  text-align: center;
+}
+
+.alert {
+  transition: ocacity 0.6s ease;
+}
+
+#flash-messages .alert {
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  width: auto;
+  border: 1px solid rgba(0, 0, 0, 0.1)
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border-color: #c3e6cb;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-color: #f5c6cb;
+}
+
+.alert-warning  {
+  background-color: #fff3cd;
+  color: #856404;
+  border-color: #ffeeba;
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: #aaaaaa;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: #000;
+  text-decoration: none;
+}
+
+/* End - flash message */

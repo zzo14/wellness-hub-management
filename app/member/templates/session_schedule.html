@@ -1,0 +1,186 @@
+{% extends 'layout.html' %}
+{% block title %}Session Schedule{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/list.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'member_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+  <div class="row py-lg-3 mx-0">
+    <div class="col-lg-7 col-md-9 mx-auto text-light">
+      <h2 class="fw-normal display-5">THERAPEUTIC SESSION SCHEDULE</br>{% if therapist %}{{ therapist.title }} {{ therapist.first_name }} {{ therapist.last_name }} {% endif %}</h2>
+      <p class="lead">Our therapeutic sessions are tailored to meet your personal health needs, offering flexible scheduling from 10 AM to 6 PM, five days a week. Whether you seek to alleviate stress, manage pain, or enhance your overall well-being, our dedicated therapists are here to guide you every step of the way.</p>
+    </div>
+  </div>
+</section>
+
+<div class="container mt-5">
+  <div class="row align-items-center mt-3 mb-3">
+    <div class="col-auto">
+      <p class="text-success mb-0">Status Filter:</p>
+    </div>
+    <div class="col-auto">
+      <select id="sessionAvailabilityFilter" class="form-select" aria-label=".form-select">
+        <option value="all" selected>Show All</option>
+        <option value="available">Available</option>
+        <option value="fullyBooked">Fully Booked</option>
+      </select>
+    </div>
+    <div class="ms-auto col-9">
+      <input type="text" id="filterInput" class="form-control" onkeyup="searchFilterTable()" placeholder="Search...">
+    </div>
+  </div>
+  <table class="table table-hover rounded-shadow" id="activeTable">
+    <thead>
+      <tr>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(0)">Date <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(1)">Time <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(2)">Duration <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(3)">Type <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(4)">Therapist <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(5)">Room <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(6)">Fee <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(7)">Status <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="activeTableBody">
+      {% for session in sessions %}
+      <tr data-bs-toggle="modal" data-bs-target="#memberModal{{ session[0] }}">  <!-- link to view booking details -->
+        <td class="ml-auto text-center">{{ session.date.strftime('%d-%m-%Y') }}</td> 
+        <td class="ml-auto text-center">
+          {% set total_seconds_start = session['start_time'].total_seconds() %}
+          {% set hours_start = total_seconds_start // 3600 %}
+          {% set minutes_start = (total_seconds_start % 3600) // 60 %}
+          {% set total_seconds_end = session['end_time'].total_seconds() %}
+          {% set hours_end = total_seconds_end // 3600 %}
+          {% set minutes_end = (total_seconds_end % 3600) // 60 %}
+          {{ "%02d:%02d" | format(hours_start, minutes_start)}} - {{ "%02d:%02d" | format(hours_end, minutes_end)}}</td>
+        <td class="ml-auto text-center">{{ session.duration }} minutes</td>
+        <td class="ml-auto text-center">{{ session.type }}</td>
+        <td class="ml-auto text-center">{{ session.therapist_name }}</td>
+        <td class="ml-auto text-center">{{ session.room_name }}</td>
+        <td class="ml-auto text-center">${{ session.price }}</td>
+        {% if session.is_available == 1 %}
+        <td class="ml-auto text-center text-success">Available</td>
+        {% else %}
+        <td class="ml-auto text-center text-danger">Fully Booked</td>     
+        {% endif %}
+        <td class="ml-auto text-center">
+          <div class="action-buttons">
+            {% if session.is_available == 1 %}
+            <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#bookModal{{ session.therapeutic_id }}">
+              <i class="fa-solid fa-book-open-reader icon-color"></i>
+            </button>
+            {% else %}
+            <button type="button" class="btn btn-link" disabled><i class="fa-solid fa-book-open-reader"></i></button>
+            {% endif %}
+          </div>
+        </td>     
+      </tr>
+     {% endfor %}
+    </tbody>
+  </table>
+  <!-- page selection -->
+  <div class="row mb-5">
+    <div class="col-12 d-flex justify-content-end align-items-center " >
+    <p class="mb-0 text-success" style="margin-right: 5px;">Show</p>
+        <select id="pageSizeSelect" class="form-select" style="width: auto;">
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+        </select>
+    </div>
+    <div class="col-12 d-flex justify-content-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination" id="pagination">
+            <li class="page-item">
+                <a class="page-link text-success" href="#" aria-label="First" onclick="goToFirstPage()">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link text-success" href="#" aria-label="Last" onclick="goToLastPage()">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            </ul>
+        </nav>
+    </div>
+  </div>
+</div>         
+
+<!-- Modal -->
+{% for session in sessions %}
+<div class="modal fade" id="bookModal{{ session.therapeutic_id }}" tabindex="-1" aria-labelledby="bookModalLabel{{ session.therapeutic_id }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-success" id="bookModalLabel{{ session.therapeutic_id }}">Book Session</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Date:</strong> {{ session.date.strftime('%d-%m-%Y') }}</p>
+        <p><strong>Time:</strong>           
+          {% set total_seconds_start = session['start_time'].total_seconds() %}
+          {% set hours_start = total_seconds_start // 3600 %}
+          {% set minutes_start = (total_seconds_start % 3600) // 60 %}
+          {% set total_seconds_end = session['end_time'].total_seconds() %}
+          {% set hours_end = total_seconds_end // 3600 %}
+          {% set minutes_end = (total_seconds_end % 3600) // 60 %}
+          {{ "%02d:%02d" | format(hours_start, minutes_start)}} - {{ "%02d:%02d" | format(hours_end, minutes_end)}}</p>
+        <p><strong>Duration:</strong> {{ session.duration }} minutes</p>
+        <p><strong>Type:</strong> {{ session.type }}</p>
+        <p><strong>Therapist:</strong> {{ session.therapist_name }}</p>
+        <p><strong>Description:</strong> {{ session.description }}</p>
+        <p><strong>Room:</strong> {{ session.room_name }}</p>
+        <p><strong>Fee:</strong> ${{ session.price }}</p>
+        <div class="text-end">
+          {% if membership_status == 1 %}
+          <form action="{{url_for('member.session_book', therapeutic_id=session.therapeutic_id)}}" method="post">
+            {% if therapist %}
+            <input type="hidden" name="therapist_id" value="{{ therapist.userID }}">
+            {% endif %}
+            <button type="submit" class="btn btn-success">Confirm Booking and Pay</button>
+          </form>
+          {% else %}
+          <p class="text-danger">Please renew your membership to book!</p>
+          {% endif %}
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<!-- <div class="modal fade" id="bookingResultModal" tabindex="-1" aria-labelledby="bookingResultModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="bookingResultModalLabel">Booking Result</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% if booking_succeeded %}
+        <div class="alert alert-success" role="alert">
+          Booking successful!
+        </div>
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+          Booking failed. Please try again later.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div> -->
+{% endblock %}
+
+{% block script %}
+<script src="{{url_for('static', filename='script/table_functions.js')}}"></script>
+{% endblock %}

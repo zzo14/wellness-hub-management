@@ -1,0 +1,181 @@
+{% extends 'layout.html' %}
+
+{% block title %}Therapeutic Session Type Management{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/list.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'manager_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mb-5 mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+    <div class="row py-lg-3 mx-0">
+      <div class="col-lg-6 col-md-8 mx-auto text-light">
+        <h2 class="fw-normal display-5">MANAGE SESSION TYPE</h2>
+        <p class="lead">Manage session types to ensure optimal therapy session management for members.</p>
+      </div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="row align-items-center mt-3 mb-3">
+        <div class="col-10">
+            <input type="text" id="filterInput" class="form-control" onkeyup="searchFilterTable()" placeholder="Search...">
+        </div>
+        <div class="col-2 text-end">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTherapeuticModal">Add New Type</button>
+        </div>
+    </div>
+
+    <!--Add Therapeutic Modal-->
+    <div class="modal fade" id="addTherapeuticModal" tabindex="-1" aria-labelledby="addTherapeuticModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-m">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-success">Add New Session Type</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="{{ url_for('manager.update_therapeutic_type') }}">
+                    <div class="modal-body">
+                        <!-- Editable fields -->
+                        <div class="form-group mb-3 ">
+                            <label class = "mb-2 text-success" for="therapeutic_type">Session Type</label>
+                            <input type="text" class="form-control" name="therapeutic_type" id="therapeutic_type" required>
+                        </div>
+                        <div class="form-group mb-3 ">
+                            <label class = "mb-2 text-success" for="therapeutic_description">Description</label>
+                            <textarea class="form-control" id="therapeutic_description" name="therapeutic_description" rows="4" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-hover rounded-shadow" id="activeTable">
+        <thead>
+            <tr>
+                <th class="ml-auto text-center" scope="col" onclick="sortTable(0)">Session Type ID <i class="fa-solid fa-sort sort-icon"></i></th>
+                <th class="ml-auto text-center name-column" scope="col" onclick="sortTable(1)">Session Name <i class="fa-solid fa-sort sort-icon"></i></th>
+                <th class="ml-auto text-center description-column" scope="col" onclick="sortTable(2)">Session Description <i class="fa-solid fa-sort sort-icon"></i></th>
+                <th class="ml-auto text-center" scope="col"> Actions </th>
+            </tr>
+        </thead>
+        <tbody id="activeTableBody">
+            {% for therapeutic in therapeutics %}
+            <tr>
+                <td class="ml-auto text-center"> {{ therapeutic[0] }} </td>
+                <td class="ml-auto text-center">{{ therapeutic[1] }}</td>
+                <td class="ml-auto text-center long-text">{{ therapeutic[2] }}</td>
+                <td class="ml-auto text-center">
+                    <div class="action-buttons">
+                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#editTherapeuticModal{{ loop.index }}">
+                                <i class="fa-solid fa-pen-to-square icon-color"></i>
+                            </button>
+                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#deleteTherapeuticModal{{ loop.index }}">
+                                <i class="fa-solid fa-trash icon-color"></i>
+                            </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!--Edit Therapeutic Modal-->
+            <div class="modal fade" id="editTherapeuticModal{{ loop.index }}" tabindex="-1" aria-labelledby="editTherapeuticModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-m">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-success">Edit Session {{therapeutic[0]}} - {{therapeutic[1]}}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="{{ url_for('manager.update_therapeutic_type') }}">
+                            <div class="modal-body">
+                                <!-- Hidden fields to send driver id and run num to backend -->
+                                <input type="hidden" name="therapeutic_id" value="{{ therapeutic[0] }}">
+                                <!-- Editable fields -->
+                                <div class="form-group mb-3 ">
+                                    <label class = "mb-2 text-success" for="therapeutic_type">Session Type</label>
+                                    <input type="text" class="form-control" name="therapeutic_type" id="therapeutic_type"  value="{{ therapeutic[1] }}"required>
+                                </div>
+                                <div class="form-group mb-3 ">
+                                    <label class = "mb-2 text-success" for="therapeutic_description">Description</label>
+                                    <textarea class="form-control" id="therapeutic_description" name="therapeutic_description" rows="4" required>{{therapeutic[2]}}</textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-success">Edit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete Confitmation Modal -->
+            <div class="modal fade" id="deleteTherapeuticModal{{ loop.index }}" tabindex="-1" aria-labelledby="deleteTherapeuticModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-m">
+                    <div class="modal-content card">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Session {{therapeutic[0]}} - {{therapeutic[1]}}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete {{ therapeutic[1] }}?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
+                            <form method="POST" action="{{ url_for('manager.delete_therapeutic_type')}}">
+                                <!-- Hidden fields to send driver id and run num to backend -->
+                                <input type="hidden" name="therapeutic_id" value="{{ therapeutic[0] }}">
+                                <!-- Editable fields -->
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- page selection -->
+    <div class="row mb-5">
+        <div class="col-12 d-flex justify-content-end align-items-center " >
+        <p class="mb-0 text-success" style="margin-right: 5px;">Show</p>
+            <select id="pageSizeSelect" class="form-select" style="width: auto;">
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+            </select>
+        </div>
+        <div class="col-12 d-flex justify-content-center">
+            <nav aria-label="Page navigation">
+                <ul class="pagination" id="pagination">
+                <li class="page-item">
+                    <a class="page-link text-success" href="#" aria-label="First" onclick="goToFirstPage()">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link text-success" href="#" aria-label="Last" onclick="goToLastPage()">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{url_for('static', filename='script/table_functions.js')}}"></script>
+{% endblock %}

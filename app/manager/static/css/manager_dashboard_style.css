@@ -1,0 +1,84 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  position:fixed;
+  left: 0;
+  width: 250px; 
+  height: 100vh;
+  background-color: #EBF0EF; 
+  padding-top: 30px; 
+  z-index: 1000;
+  overflow-y: auto;
+  transition: all 0.3s;
+}
+
+.sidebar a {
+  padding: 5px 25px;
+  text-decoration: none;
+  font-size: 15px;
+  color: #1c5333;
+  display: block;
+  transition: all 0.3s;
+}
+
+.sidebar a span {
+  display: block;
+  padding: 10px 10px; 
+  transition: all 0.3s;
+}
+
+.sidebar a:hover span,
+.submenu a:hover span{
+  background: #198754; 
+  color: #F0F7F4;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 10px;
+
+}
+
+.sidebar a i {
+  margin-right: 8px;
+}
+
+.submenu {
+  display: none;
+  padding-left: 25px;
+}
+
+.menu-item:hover .submenu {
+  display: block;
+}
+
+.main-content {
+  margin-left: 300px;
+  margin-right: 100px;  
+  padding: 40px;
+}
+
+.card-cover {
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+
+.card:hover {
+  transform: scale(1.05); 
+  filter: brightness(110%); 
+}
+
+.text-shadow-1 { text-shadow: 2px 2px 4px rgba(0,0,0,0.75); }
+

@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block title %}Update Manager Profile{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('manager.static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'manager_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+    <div class="row py-lg-3 mx-0">
+      <div class="col-lg-6 col-md-8 mx-auto text-light">
+        <h2 class="fw-normal display-5">UPDATE PROFILE</h2>
+        <p class="lead">Update your profile here.</p>
+      </div>
+    </div>
+</section>
+
+<!-- Admin Profile -->
+<div class="container">
+    <form action="{{ url_for('manager.update_manager_profile') }}" method="POST" enctype="multipart/form-data" class="form-width">    <!-- Submit form using POST method and allow file upload -->
+        <!-- form for updating profile with prefilled values -->         
+        <div class="mb-3">
+            <label for="title" class="fw-bold form-label mt-5">Title</label>
+            <select class="form-select" aria-label="Default select" name="title" id="title"
+                required>
+                <option selected disabled value="">Please choose one...</option>
+                {% for title in titles %}
+                <option value="{{ title }}" {% if manager[5]==title %} selected {% endif %}>{{title}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <label for="first_name" class="fw-bold form-label">First Name</label>
+            <input type="text" class="form-control" name="first_name" id="first_name" value="{{ manager[6] }}" 
+                title="Name must contain only alphabetic characters!" required>               <!-- first name input -->
+        </div>
+    
+        <div class="mb-3">
+            <label for="last_name" class="fw-bold form-label">Last Name</label>
+            <input type="text" class="form-control" name="last_name" id="last_name" value="{{ manager[7] }}" 
+                title="Name must contain only alphabetic characters!" required>                 <!-- last name input -->
+        </div>
+
+        <div class="mb-3">
+            <label for="position" class="fw-bold form-label">Position</label>
+            <input type="text" class="form-control" name="position" id="position" value="{{ manager[8] }}" 
+                title="Position must contain only alphabetic characters!" required>                   <!-- read only position input -->
+        </div>
+
+        <div class="mb-3">
+            <label for="phone" class="fw-bold form-label">Phone:</label>
+            <input type="tel" pattern="[0-9]{10}" class="form-control" id="phone" name="phone" value="{{ manager[9] }}" 
+            title="Please enter a valid phone number.Example: 0271231234." required>                           <!-- phone input -->
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="fw-bold form-label">Email</label> 
+            <input type="email" class="form-control" name="email" id="email" title="Please enter a valid email." value="{{ manager[10] }}" required>                         <!-- email input -->
+        </div>
+        <div class="col-md-12 mt-5 mb-5 text-center">
+            <button type="submit" class="btn btn-success mb-5">Update Profile</button>                     <!-- submit button -->
+        </div>
+    </form>
+    </div>
+</div>
+{% endblock %}

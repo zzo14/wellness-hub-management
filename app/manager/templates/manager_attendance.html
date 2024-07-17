@@ -1,0 +1,169 @@
+{% extends 'layout.html' %}
+
+{% block title %}Attendance Record{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/list.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% if role == 'therapist' %}
+{% include 'therapist_navbar.html' %}
+{% else %}
+{% include 'manager_navbar.html' %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mb-5 mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+  <div class="row py-lg-3 mx-0">
+    <div class="col-lg-6 col-md-8 mx-auto text-light">
+      <h2 class="fw-normal display-5">RECORD ATTENDANCE</h2>
+      <p class="lead">Keep accurate track of member attendance to ensure effective management of sessions and classes.</p>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="row align-items-center mt-3 mb-3">
+    <div class="col-auto">
+      <p class="text-success mb-0">Type Filter:</p>
+    </div>
+    <div class="col-auto">
+      <select id="typeFilter" class="form-select" aria-label=".form-select-sm">
+          <option value="all" selected>All</option>
+          <option value="class">Group Class</option>
+          <option value="therapeutic">Private Therapeutic</option>
+      </select>
+    </div>
+    <div class="ms-auto col-9 text-end">
+        <input type="text" id="filterInput" class="form-control" onkeyup="searchFilterTable()" placeholder="Search...">
+    </div>
+  </div>
+  <table class="table table-hover rounded-shadow" id="activeTable">
+    <thead>
+      <tr>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(0)">Type <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(1)">Class/Session <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(2)">Date <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(3)">Time <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(4)">Therapist <i class="fa-solid fa-sort sort-icon"></i></th>
+        <!-- <th class="ml-auto text-center" scope="col" onclick="sortTable(5)">Attendance Rate <i class="fa-solid fa-sort sort-icon"></i></th> -->
+        <th class="ml-auto text-center" scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody id="activeTableBody">
+      {% for record in records %}
+      <tr data-bs-toggle="modal" data-bs-target="#recordAttendanceModal{{ loop.index }}">
+        <td class="ml-auto text-center" style="text-transform: capitalize;">{% if record[0] == "therapeutic" %}Private Therapeutic {% else
+          %}Group Class{% endif %}</td>
+        <td class="ml-auto text-center" style="text-transform: capitalize;">{{ record[2] }}</td>
+        <td class="ml-auto text-center" style="text-transform: capitalize;">{{ record[3].strftime('%d-%m-%Y') }}</td>
+        <td class="ml-auto text-center" style="text-transform: capitalize;">{{ record[4] }}</td>
+        <td class="ml-auto text-center">{{ record[5] }}</td>
+        <!-- <td class="ml-auto text-center">{% if record[6] %}{{ "%.0f%%" | format(record[6]*100) }}{% else %}0%{% endif %}</td> -->
+        <td class="ml-auto text-center">
+          <div class="action-buttons">
+            <button type="button" class="btn btn-link" data-bs-toggle="modal"
+              data-bs-target="#recordAttendanceModal{{ loop.index }}">
+              <i class="fa-regular fa-clipboard icon-color"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <!-- page selection -->
+  <div class="row mb-5">
+    <div class="col-12 d-flex justify-content-end align-items-center " >
+    <p class="mb-0 text-success" style="margin-right: 5px;">Show</p>
+        <select id="pageSizeSelect" class="form-select" style="width: auto;">
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+        </select>
+    </div>
+    <div class="col-12 d-flex justify-content-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination" id="pagination">
+            <li class="page-item">
+                <a class="page-link text-success" href="#" aria-label="First" onclick="goToFirstPage()">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link text-success" href="#" aria-label="Last" onclick="goToLastPage()">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            </ul>
+        </nav>
+    </div>
+  </div>
+</div>
+
+<!-- modal -->
+{% for record in records %}
+<div class="modal fade" id="recordAttendanceModal{{ loop.index }}" tabindex="-1" aria-labelledby="recordAttendanceModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('manager.mark_attendance') }}">
+        <div class="modal-header">
+          <h5 class="modal-title text-success">Record Attendance for {{ record[2] }} at {{ record[3].strftime('%d-%m-%Y') }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% set attendance_key = (record[1], record[3]) if record[0] == 'class' else record[1] %}
+          {% if attendance_data[record[0]][attendance_key] | length == 0 %}
+          <p>No member has booked this class / session.</p>
+          {% else %}
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Member Name</th>
+                <th>Attendance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for attendance in attendance_data[record[0]][attendance_key] %}
+              <tr>
+                <td>{{ attendance[2] }}</td>
+                <td>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="is_attended_{{ attendance[4] }}_present" name="is_attended_{{ attendance[4] }}"
+                      value="1" {% if attendance[3]==1 %}checked{% endif %}>
+                    <label class="form-check-label" for="is_attended_{{ attendance[4] }}_present">Present</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="is_attended_{{ attendance[4] }}_absent" name="is_attended_{{ attendance[4] }}"
+                      value="0" {% if attendance[3]==0 %}checked{% endif %}>
+                    <label class="form-check-label" for="is_attended_{{ attendance[4] }}_absent">Absent</label>
+                  </div>
+                </td>
+              </tr>
+              <!-- Hidden fields -->
+              <input type="hidden" name="type" value="{{ record[0] }}">
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+        </div>
+        <div class="modal-footer">
+          {% if attendance_data[record[0]][attendance_key] | length != 0 %}
+          <button type="submit" class="btn btn-success">Record</button>
+          {% endif %}
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}
+
+{% block script %}
+<script src="{{url_for('static', filename='script/table_functions.js')}}"></script>
+{% endblock %}

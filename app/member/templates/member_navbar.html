@@ -1,0 +1,22 @@
+<div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('member.member_dashboard') }}"><span
+                    class="ms-1">Dashboard</span></a></li>
+        <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('member.member_profile') }}"><span
+                    class="ms-1">Profile</span></a></li>
+        <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('member.therapist_list') }}"><span class="ms-1">Therapist List</span></a></li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-success" id="scheduleDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Booking</a>
+            <ul class="dropdown-menu" aria-labelledby="scheduleDropdown">
+                <li><a class="dropdown-item text-success" href="{{ url_for('news_timetable.timetable') }}">Group Classes</a></li>
+                <li><a class="dropdown-item text-success" href="{{ url_for('member.session_schedule') }}">Private Sessions</a></li>
+                <li><a class="dropdown-item text-success" href="{{ url_for('member.booking') }}">Bookings</a></li>
+            </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link text-success" href="{{url_for('member.membership_details')}}"><span class="ms-1">Membership</span></a></li>
+        <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('news_timetable.news') }}"><span class="ms-1">News</span></a></li>
+    </ul>
+</div>
+<div class="text-end">
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-success me-2">Logout</button></a>
+</div>

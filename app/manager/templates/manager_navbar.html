@@ -1,0 +1,38 @@
+<div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav mb-2 mb-lg-0"> <!-- navigation links  -->
+        <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('manager.manager_dashboard') }}"><span class="ms-1">Dashboard</span></a></li>
+        <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('manager.manager_profile') }}"><span class="ms-1">Profile</span></a></li>
+        <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('manager.track_payment') }}"><span class="ms-1">Payment Tracking</span></a></li>
+        <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('manager.member_list') }}"><span class="ms-1">Member List</span></a></li>
+        <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('manager.therapist_list') }}"><span class="ms-1">Therapist List</span></a></li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-success" id="scheduleDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Schedule</a>
+            <ul class="dropdown-menu" aria-labelledby="scheduleDropdown">
+                <li><a class="dropdown-item" href="{{ url_for('news_timetable.timetable_management') }}">Class Schedule</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('manager.session_schedule') }}">Session Schedule</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('manager.attendance_record') }}">Record Attendance</a></li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-success" id="reportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Report</a>
+            <ul class="dropdown-menu" aria-labelledby="reportDropdown">
+                <li><a class="dropdown-item" href="{{ url_for('manager.attendance_report')}}">Attendance Report</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('manager.popular_class_report') }}">Class Report</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('manager.financial_report')}}">Financial Report</a></li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-success" id="managementDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Other Management</a>
+            <ul class="dropdown-menu" aria-labelledby="managementDropdown">
+                <li><a class="dropdown-item" href="{{ url_for('news_timetable.news') }}">News</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('manager.manage_room') }}">Room</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('manager.manage_class_type') }}">Class Type</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('manager.manage_therapeutic_type') }}">Session Type</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('manager.manage_price') }}">Prices</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<div class="text-end">
+  <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-success me-2">Logout</button></a>
+</div>

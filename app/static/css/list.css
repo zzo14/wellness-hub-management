@@ -1,0 +1,209 @@
+/* password input */
+.input-group {
+    position: relative;
+}
+
+.input-group-append {
+    position: absolute;
+    right: 10px;
+    top: 6px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.input-group .form-control {
+    padding-right: 30px;
+}
+
+.tooltip {
+    display: none;
+    position: absolute;
+    opacity: 1;
+    background-color: #f9f9f9;
+    border: 1px solid #d3d3d3;
+    padding: 5px;
+    border-radius: 3px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    top: 100%;
+    left: 0;
+    z-index: 10;
+}
+
+/* End - password input */
+
+/* inactive_item */
+.inactive-item {
+    position: relative;
+}
+
+.inactive-item td::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1;
+}
+
+.inactive-item :hover::after {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.recover-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.inactive-item:hover .recover-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* End - inactive_item */
+
+/* table */
+
+.table {
+    width: 100%; 
+    table-layout: fixed; 
+}
+
+.table th, .table td {
+    text-align: center; 
+    vertical-align: middle; 
+}
+
+.table-hover thead th {
+    text-align: center; 
+    color: white; 
+    background-color: #198754;
+    font-size: medium; 
+}
+
+.rounded-shadow {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 15px;
+    overflow: hidden; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+  
+  .form-label {
+    color:#198754
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .btn-spacing {
+    margin-right: 15px;
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-color {
+    color: #198754;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+}
+
+/* End - table */
+
+/* class-type table */
+
+.name-column {
+    width: 20%;
+}
+
+.description-column {
+    width: 40%;
+}
+
+.omit-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.long-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.9em;
+}
+
+/* END - class-type table */
+
+/* page selection*/
+.pagination .page-item.active .page-link {
+    background-color: #198754;
+    border-color: #198754;
+    color: white;
+}
+
+.page-link {
+    color: black; 
+  }
+  
+  .page-link:hover {
+    color: black !important;
+  }
+
+.form-select:focus {
+    border-color: #198754; 
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25); 
+}
+
+.form-control:focus {
+    border-color: #198754; 
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25); 
+}
+
+/* checkbox style */
+:root {
+    --checkbox-checked-color: #198754; 
+    --checkbox-unchecked-color: #198754; 
+  }
+  
+  .form-check-input:checked {
+    background-color: var(--checkbox-checked-color);
+    border-color: var(--checkbox-checked-color);
+  }
+  
+  .form-check-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25); 
+  }
+  
+  .form-check-input:focus:before {
+    box-shadow: none; 
+    }
+  
+  .form-check-input:focus:checked {
+  box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25); 
+  }
+  /* End - checkbox style */

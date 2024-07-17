@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block title %}Update Therapist Profile{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('therapist.static', filename='css/therapist_style.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'therapist_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+    <div class="row py-lg-3 mx-0">
+      <div class="col-lg-6 col-md-8 mx-auto text-light">
+        <h2 class="fw-normal display-5">UPDATE PROFILE</h2>
+        <p class="lead">Update your profile here.</p>
+      </div>
+    </div>
+  </section>
+
+<div class="container">
+    <form action="/therapist/profile/update" method="POST" enctype="multipart/form-data" class="form-width">    <!-- Submit form using POST method and allow file upload -->
+        <!-- form for updating profile with prefilled values -->         
+        <div class="mb-3">
+            <label for="title" class="fw-bold form-label mt-5">Title:</label>
+            <select name="title" class="form-select" required>                     <!-- title input -->
+                {% for option in ["Mr.", "Mrs.", "Miss", "Ms.", "Mx.", "Dr.", "Prof."] %}
+                    <option value="{{ option }}" {% if option == therapist[0] %} selected {% endif %}>{{ option }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <label for="first_name" class="fw-bold form-label">First Name:</label>
+            <input type="text" class="form-control" id="first_name" name="first_name" 
+                title="Name must contain only alphabetic characters!" value="{{ therapist[1] }}" required>               <!-- first name input -->
+        </div>
+    
+        <div class="mb-3">
+            <label for="last_name" class="fw-bold form-label">Last Name:</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" 
+                title="Name must contain only alphabetic characters!" value="{{ therapist[2] }}" required>                 <!-- last name input -->
+        </div>
+
+        <div class="mb-3">
+            <label for="position" class="fw-bold form-label">Position:</label>
+            <input type="text" class="form-control" id="position" name="position" value="{{ therapist[3] }}" readonly>                   <!-- read only position input -->
+        </div>
+
+        <div class="mb-3">
+            <label for="phone" class="fw-bold form-label">Phone:</label>
+            <input type="tel" pattern="[0-9]{10}" class="form-control" id="phone" name="phone" 
+                title="Please enter a vaild phone number.example: 0271231234."  value="{{ therapist[4] }}" required>                           <!-- phone input -->
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="fw-bold form-label">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" 
+                title="Please enter a vaild title." value="{{ therapist[5] }}" required>                          <!-- email input -->
+        </div>
+
+        <div class="mb-3">
+            <label for="therapist_profile" class="fw-bold form-label">Therapist Profile:</label>
+            <textarea class="form-control" id="therapist_profile" name="therapist_profile" rows="3" required placeholder="Please insert your registration number and any certifications.">{{ therapist[6] }}</textarea>                <!-- therapist profile input -->
+        </div>
+
+        <div class="mb-3">
+            <label for="profile_image" class="fw-bold form-label">Profile Image:</label>
+            <input type="file" class="form-control" id="profile_image" name="profile_image" accept=".png, .jpg, .jpeg, .gif">
+        </div>
+
+        <div class="col-md-12 mt-5 text-center">
+            <button type="submit" class="btn btn-success mb-5">Update Profile</button>                     <!-- submit button -->
+        </div>
+    </form>
+</div>
+{% endblock %}

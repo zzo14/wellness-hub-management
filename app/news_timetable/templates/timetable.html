@@ -1,0 +1,123 @@
+{% extends 'layout.html' %}
+
+{% block title %}Class Timetable{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/fullcalendar@5/main.min.css">
+<link rel="stylesheet" href="{{ url_for('news_timetable.static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'news_timetable_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mb-5 mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+    <div class="row py-lg-3 mx-0">
+      <div class="col-lg-6 col-md-8 mx-auto text-light">
+        <h2 class="fw-normal display-5">CLASS TIMETABLE</h2>
+        <p class="lead">Our classes runs from 9 AM to 7 PM daily, allowing you to find the perfect time to relax and recharge. With options available five days a week, you can always find time for your health.</p>
+      </div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="row pe-1">
+        {% if role == "therapist" %}
+        <div class="col-8">
+          <input type="text" id="filterInput" class="form-control mb-3" onkeyup="serachFilterTimetable()" placeholder="Search a class here">
+        </div>
+        <div class="col-4 text-end">
+            <div class="filter">
+                <input type="hidden" id="therapist-id" value="{{ therapist_id }}">
+                <input type="checkbox" id="filterTherapist" class="form-check-input" onChange="filterTherapistClass()" checked>
+                <label for="filterTherapist" class="text-success">Show only my classes</label>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <input type="text" id="filterInput" class="form-control mb-3" onkeyup="serachFilterTimetable()" placeholder="Search a class here">
+        </div>
+        {% endif %}
+    </div>
+
+    <div class=row>
+        <div class="container mb-5">
+            <div id="calendar" class="mb-5"></div>
+        </div>
+    </div>
+    <!--Class detail-->
+    <div class="modal fade" id="classDetailModal" tabindex="-1" aria-labelledby="classDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title text-success" id="class-title"></h3>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="text-success fw-bold mb-3">Class Details:</h5>
+                        <p class="mb-2" id="class-time"></p>
+                        <p class="mb-2" id="class-location"></p>
+                        <p class="mb-2" id="class-description"></p>
+                        <p id="class-remaining-slots"></p>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-5">
+                        <h5 class="text-success fw-bold mb-3">Therapist Details:</h5>
+                        <p class="mb-2" id="class-therapist"></p>
+                        <p class="mb-2"id="class-therapistPosition"></p>
+                        <p id="class-therapistProfile"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                {% if role == "member" %}
+                    {% if membership_status == 1 %}
+                    <form action="{{ url_for('news_timetable.book_class')}}" method="post">
+                        <!-- Hidden fields to send driver id and run num to backend -->
+                        <input type="hidden" name="class_id" id="class_id" value="">
+                        <input type="hidden" name="class_date" id="class_date" value="">
+                        <!-- Editable fields -->
+                        <button type="submit" class="btn btn-success" id="book-btn">Book Now</button>
+                    </form>
+                    {% else %}
+                    <p class="text-danger">Your membership is expired, please renew your membership before booking this class.</p>
+                    {% endif %}
+                {% endif %}
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="https://unpkg.com/fullcalendar@5/main.min.js"></script>
+<script src="{{url_for('news_timetable.static', filename='script/timetable.js')}}"></script>
+<script>
+    var classesData = {{ classes | tojson }};
+    var classRemainSlots = {{ remaining_slots | tojson }};
+    // Get the timetable data
+    var timetableData = classesData.map(function(c) {
+        return {
+            id: c[0],
+            title: c[1],
+            daysOfWeek: convertDaysOfWeek(c[5]),
+            startTime: c[3],
+            endTime: c[4],
+            description: c[2],
+            location: c[6],
+            therapistId: c[7],
+            therapist: c[8],
+            position: c[9],
+            profile: c[10],
+            profileImage: c[11]
+        };
+    })
+    
+    filterTherapistClass();
+</script>
+{% endblock %}

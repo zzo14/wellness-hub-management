@@ -1,0 +1,93 @@
+{% extends 'layout.html' %}
+{% block title %}Membership Details{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/list.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'member_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+    <div class="row py-lg-3 mx-0">
+      <div class="col-lg-6 col-md-8 mx-auto text-light">
+        <h2 class="fw-normal display-5">MY MEMBERSHIP</h2>
+        <p class="lead">Manage your membership and track the payment history</p>
+      </div>
+    </div>
+</section>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <h2 class="fw-light mb-3 text-success">Overview</h2>
+            <div class="mt-4 mb-5 p-5 text-white rounded" style="background-image: linear-gradient(to right, #198754, #70c286);">
+                <p><strong>Status:</strong> {{ "Active" if membership_detail.membership_status == 1 else "Inactive" }}</p>
+                <p><strong>Expiry Date:</strong> {{ membership_detail.expiry_date.strftime('%d-%m-%Y') }}</strong></p>
+                <p><strong>Validity:</strong> {{ validity_days }} days</p>
+            {% if validity_days <= 30 %}
+            <div class="action-box mt-3">
+                <p class="fw-bold mb-2 text-light">Renew Membership:</p>
+                <a href="{{ url_for('auth.membership_payment') }}">
+                    <button type="button" class="btn btn-light text-success">Renew</button>
+                </a>
+            </div>
+            {% endif %}
+            {% if membership_detail.membership_status == 1 %}
+            <div class="action-box mt-3">
+                <p class="fw-bold mb-2 text-light">Cancel Membership:</p>
+                <button type="submit" class="btn btn-light text-success" data-bs-toggle="modal" data-bs-target="#cancelMembershipModal">Cancel</button>
+            </div>
+            {% endif %}
+            </div>
+        </div>
+        <div class="col-md-8">
+            <h2 class="fw-light mb-3 text-success">Payment History</h2>
+            <table class="table mt-4 table-hover rounded-shadow" id="activeTable">
+                <thead>
+                    <tr>
+                        <th class="ml-auto text-center" scope="col" onclick="sortTable(0)">Payment <i class="fa-solid fa-sort sort-icon"></i></th>
+                        <th class="ml-auto text-center" scope="col" onclick="sortTable(1)">Payment Date <i class="fa-solid fa-sort sort-icon"></i></th>
+                        <th class="ml-auto text-center" scope="col" onclick="sortTable(2)">Amount <i class="fa-solid fa-sort sort-icon"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="activeTableBody">
+                    {% for payment in membership_payments %}
+                    <tr>
+                        <td class="ml-auto text-center">{{ payment.fees_name.split('-')[0] }}</td>
+                        <td class="ml-auto text-center">{{ payment.payment_date.strftime('%d-%m-%Y') }}</td>
+                        <td class="ml-auto text-center">${{ payment.amount }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    <!-- Cancel Confitmation Modal -->
+    <div class="modal fade" id="cancelMembershipModal" tabindex="-1" aria-labelledby="cancelMembershipModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-m">
+            <div class="modal-content card">
+                <div class="modal-header">
+                    <h5 class="modal-title">Unsubscription</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to cancel your membership? This action cannot be undone. You will lose access to all the benefits of your membership. We will only refund the fees you have paid for the remaining days of your membership.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" aria-label="Close">No, I want to keep it!</button>
+                    <form method="POST" action="{{ url_for('member.cancel_membership') }}">
+                        <!-- Editable fields -->
+                        <button type="submit" class="btn btn-danger">Yes I want to cancel!</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script src="{{url_for('static', filename='script/table_functions.js')}}"></script>
+{% endblock %}

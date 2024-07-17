@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+{% block title %}Manager Profile{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/list.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'manager_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+    <div class="row py-lg-3 mx-0">
+      <div class="col-lg-6 col-md-8 mx-auto text-light">
+        <h2 class="fw-normal display-5">MANAGE PROFILE</h2>
+        <p class="lead">Manage your profile and password here.</p>
+      </div>
+    </div>
+</section>
+<div class="container mt-5">
+    <table class="table width-table rounded-shadow ">
+        <thead>
+            <tr>
+            <th colspan="2" class="text-center text-white bg-success">Details</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td class="text-success"><strong>Username:</strong></td>
+            <td>{{ manager[1] }}</td>
+        </tr>
+        <tr>
+            <td class="text-success"><strong>Title:</strong></td>
+            <td>{{ manager[5] }}</td>
+        </tr>
+        <tr>
+            <td class="text-success"><strong>First Name:</strong></td>
+            <td style="text-transform: capitalize;">{{ manager[6] }}</td>
+        </tr>
+        <tr>
+            <td class="text-success"><strong>Last Name:</strong></td>
+            <td style="text-transform: capitalize;">{{ manager[7] }}</td>
+        </tr>
+        <tr>
+            <td class="text-success"><strong>Position:</strong></td>
+            <td style="text-transform: capitalize;">{{ manager[8] }}</td>
+        </tr>
+        <tr>
+            <td class="text-success"><strong>Phone:</strong></td>
+            <td>{{ manager[9] }}</td>
+        </tr>
+        <tr>
+            <td class="text-success"><strong>Email:</strong></td>
+            <td>{{ manager[10] }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="col-md-12 mt-5 mb-5 text-center">
+        <!-- <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#updateProfileModal">Update Profile</button>     -->
+        <a href="{{ url_for('manager.update_manager_profile') }}" class="btn btn-success">Update Profile</a> <!-- link to update profile --> 
+        <a href="{{ url_for('auth.change_password') }}" class="btn btn-success">Change Password</a> <!-- link to update profile -->            
+    </div>    
+</div>
+{% endblock %}

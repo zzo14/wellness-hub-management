@@ -1,0 +1,107 @@
+{% extends 'layout.html' %}
+{% block title %}Therapist List{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('member.static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% if loggedin %}
+{% include 'member_navbar.html' %}
+{% else %}
+<div class="collapse navbar-collapse" id="navbarNav">
+  <ul class="navbar-nav mb-2 mb-lg-0">
+    <li class="nav-item"><a href="{{ url_for('home.home') }}" class="nav-link px-2 text-success">Home</a></li>
+    <li class="nav-item"><a href="{{ url_for('news_timetable.timetable') }}" class="nav-link px-2 text-success">Class</a></li>
+    <li class="nav-item"><a href="{{ url_for('member.therapist_list') }}" class="nav-link px-2 text-success">Therapist</a></li>
+    <li class="nav-item"><a href="{{ url_for('home.price') }}" class="nav-link px-2 text-success">Memberships</a></li>
+    <li class="nav-item"><a href="{{ url_for('news_timetable.news') }}" class="nav-link px-2 text-success">News</a></li>
+  </ul>
+</div>
+<div class="text-end">
+  <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-success me-2">Go Home</button></a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+  <div class="row py-lg-3 mx-0">
+    <div class="col-lg-6 col-md-8 mx-auto text-light">
+      <h2 class="fw-normal display-5">THERAPIST LIST</h2>
+      <p class="lead">Welcome to our Therapist Directory, a dedicated space where you can explore and connect with our skilled and compassionate therapists. Each therapist brings a unique set of skills and specializations, ensuring that you can find the perfect match for your health and wellness needs</p>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="row row-cols-1 row-cols-lg-4 align-items-stretch g-4 py-5 justify-content-center">
+    {% for therapist in therapists %}
+    <div class="col-md-3 col-sm-6 mb-5 therapist-card" data-bs-toggle="modal" data-bs-target="#viewTherapistModal{{ loop.index }}">
+      <div class="card card-cover h-100 overflow-hidden rounded-4 shadow-lg">
+        {% if therapist.profile_image %}
+				<img class="card-img-top" src="/static/image/profile_image/{{ therapist.profile_image }}" alt="Profile Image"
+          style="width: 100%; height: 300px;">
+				{% else %}
+        <img class="card-img-top" src="/static/image/profile_image/default.jpg" alt="Profile Image"
+          style="width: 100%; height: 300px;">
+				{% endif %}
+        <div class="card-body">
+          <h4 class="card-title text-success">{{ therapist.title }} {{ therapist.first_name }} {{ therapist.last_name }}</h4>
+          <p class="card-text">
+            <strong>Position:</strong> {{ therapist.position }}<br />
+            <strong>Phone:</strong> {{ therapist.phone }}<br />
+            <strong>Email:</strong> {{ therapist.email }}<br />
+          </p>
+          {% if loggedin %}
+          <a href="{{ url_for('member.session_schedule', therapistId=therapist.userID) }}" class="btn btn-success" role="button"
+            onclick="event.stopPropagation();">
+            See Sessions
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for therapist details -->
+    <div class="modal fade" id="viewTherapistModal{{ loop.index }}" tabindex="-1" aria-labelledby="viewTherapistModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content card">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ therapist.title }} {{ therapist.first_name }} {{ therapist.last_name }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row align-items-start">
+              <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <img src="/static/image/profile_image/{{ therapist.profile_image }}" class="img-fluid rounded border shadow-sm" alt="Image showcasing weed"
+                  style="max-height:400px; max-width: 400px; width: 100%; height: auto;">
+              </div>
+              <div class="col-md-6 d-flex flex-column justify-content-between">
+                <dl class="row">
+                  <div class="col-sm-12 col-md-12">
+                    <dt class="col-sm-4 font-weight-bold text-success">Position:</dt>
+                    <dd class="col-sm-8">{{ therapist.position }}</dd>
+                  </div>
+                  <div class="col-sm-12 col-md-12">
+                    <dt class="col-sm-4 font-weight-bold text-success">Phone:</dt>
+                    <dd class="col-sm-8">{{ therapist.phone }}</dd>
+                  </div>
+                  <div class="col-sm-12 col-md-12">
+                    <dt class="col-sm-4 font-weight-bold text-success">Email:</dt>
+                    <dd class="col-sm-8">{{ therapist.email }}</dd>
+                  </div>
+                  <div class="col-sm-12 col-md-12">
+                    <dt class="col-sm-4 font-weight-bold text-success">Profile:</dt>
+                    <dd class="col-sm-8">{{ therapist.therapist_profile }}</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endblock %}

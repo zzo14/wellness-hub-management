@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+
+{% block title %}Membership Payement{% endblock %}
+
+{% block navbar %}
+{% if role == 'member' %}
+{% include 'member_navbar.html' %}
+{% else %}
+<div class="collapse navbar-collapse" id="navbarNav"></div>
+<div class="text-end"></div>
+{% endif %}
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('auth.static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block content %}
+<!--Form-->
+<div id="paymentForm" class="container" >
+    <div class="row py-lg-5">
+        <h1 class="fw-light my-0 mb-3 text-center text-success">Choose Your Payment Plan</h1>
+    </div>
+    <form id="paymentForm" method="post" action="{{url_for('auth.membership_payment')}}">
+        <div class="form-group">
+            <div class="row row-cols-1 row-cols-md-3 mb-3 text-center justify-content-center">
+                {% for plan in plans %}
+                <div class="col-md-6 mb-5" style="width: 30%">
+                    <div class="card mb-4 rounded-3 shadow-sm">
+                        <div class="card-header py-3 bg-success">
+                            <h4 class="my-0 fw-bold text-light">{{ plan[1] }}</h4>
+                        </div>
+                        <div class="card-body">
+                            <h1 class="card-title pricing-card-title">${{ plan[3] }}</h1>
+                            {% if plan[1] == "Monthly Membership" %}
+                            <button type="button" class="w-50 btn btn-lg btn-success select-month-btn mt-3" data-bs-toggle="modal" data-bs-target="#SelectMonthModal" data-plan-id="{{ plan[0] }}">Select</button>
+                            {% else %}
+                            <!-- Hidden fields -->
+                            <input type="hidden" name="plan" value="{{ plan[0] }}">
+                            <!-- Editable fields -->
+                            <button type="submit" class="w-50 btn btn-lg btn-success mt-3">Pay Now</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="SelectMonthModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="monthForm" method="post" action="{{url_for('auth.membership_payment')}}">
+                <div class="modal-header">
+                    <h4 class="modal-title">Payment Duration (Months)</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="numberOfMonths">Select months you would like to pay (maximum 11 months):</label>
+                        <input type="number" class="form-control" name="numberOfMonths" id="numberOfMonths" min="1" max="11" placeholder="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- Hidden fields -->
+                    <input type="hidden" name="plan" id="selectedPlanId">
+                    <!-- Editable fields -->
+                    <button type="submit" class="btn btn-success">Pay Now</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="{{url_for('auth.static', filename='script/auth.js')}}"></script>
+<script>
+    handleMonthlyPayment();
+</script>
+{% endblock %}

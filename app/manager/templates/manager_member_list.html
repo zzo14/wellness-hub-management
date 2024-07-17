@@ -1,0 +1,339 @@
+{% extends 'layout.html' %}
+
+{% block title %}Member List{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/list.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'manager_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mb-5 mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+  <div class="row py-lg-3 mx-0">
+    <div class="col-lg-6 col-md-8 mx-auto text-light">
+      <h2 class="fw-normal display-5">MANAGE MEMBER LIST</h2>
+      <p class="lead">Efficiently manage and update member details to ensure accurate and up-to-date records for seamless operations.</p>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="row align-items-center mt-3 mb-3">
+    <div class="col-auto">
+      <p class="text-success mb-0">Status Filter:</p>
+    </div>
+    <div class="col-auto">
+      <select id="activeFilter" class="form-select" aria-label=".form-select">
+        <option value="active" selected>Active Member</option>
+        <option value="inactive">Inactive Member</option>
+      </select>
+    </div>
+    <div class="col-auto">
+        <p class="text-success mb-0">Membership Filter:</p>
+    </div>
+    <div class="col-auto">
+      <select id="membershipFilter" class="form-select" aria-label=".form-select-sm">
+        <option value="all" selected>All</option>
+        <option value="active">Active</option>
+        <option value="expired">Expired</option>
+        <option value="near_expired">Near Expired</option>
+      </select>
+    </div>
+    <div class="ms-auto col-4">
+      <input type="text" id="filterInput" class="form-control" onkeyup="searchFilterTable()" placeholder="Search...">
+    </div>
+
+    <div class="col-2 text-end">
+      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addMemberModal">Add Member</button>
+    </div>
+  </div>
+
+  <!--Add Member Modal-->
+  <div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-success">Add New Member</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="POST" action="{{ url_for('manager.add_member') }}">
+          <div class="modal-body">
+            <!-- Editable fields -->
+            <div class="row justify-content-around">
+              <div class="form-group col-6 mb-3 ">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" name="username" id="username" required>
+              </div>
+              <div class="form-group col-6 mb-3 ">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-group">
+                  <input type="password" class="form-control" name="password" id="password"
+                    title="Password must be at least 8 characters long and conatin uppercase, lowercase, number and special characters."
+                    oninput="validate_password('password', 'password-tooltip')" required>
+                  <div class="tooltip" id="password-tooltip">
+                    Password must be: <br />
+                    - at least 8 characters long <br />
+                    - conatin uppercase, lowercase, number and special characters.
+                  </div>
+                  <div class="input-group-append">
+                    <i class="fa-regular fa-eye" aria-hidden="true" onclick="toggle_password_visibility('password')"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row justify-content-around">
+              <div class="form-group col-2 mb-3 ">
+                <label for="title" class="form-label">Title</label>
+                <select class="form-select form-control" aria-label="Default select" name="title" id="title" required>
+                  <option selected disabled value="">Select</option>
+                  {% for title in titles %}
+                  <option value="{{ title }}">{{title}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group col-5 mb-3 ">
+                <label for="first_name" class="form-label">First Name</label>
+                <input type="text" class="form-control" name="first_name" id="first_name" required>
+              </div>
+              <div class="form-group col-5 mb-3 ">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input type="text" class="form-control" name="last_name" id="last_name" required>
+              </div>
+            </div>
+            <div class="row justify-content-around">
+              <div class="form-group col-4 mb-3 ">
+                <label for="first_name" class="form-label">Position</label>
+                <input type="text" class="form-control" name="position" id="position" required>
+              </div>
+              <div class="form-group col-4 mb-3 ">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="tel" pattern="[0-9]{10}" class="form-control" name="phone" id="phone"
+                  title="Please enter a vaild phone number. Example: 0271231234." required>
+              </div>
+              <div class="form-group col-4 mb-3 ">
+                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                <input type="date" class="form-control" name="date_of_birth" id="date_of_birth" onclick="max_date_today()" required>
+              </div>
+            </div>
+            <div class="form-group mb-3 ">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" name="email" id="email" title="Please enter a vaild email." required>
+            </div>
+            <div class="form-group mb-3 ">
+              <label for="address" class="form-label">Address</label>
+              <input type="text" class="form-control" name="address" id="address" required>
+            </div>
+            <div class="form-group mb-3 ">
+              <label for="health_info" class="form-label">Health Information (Optional)</label>
+              <textarea class="form-control" id="health_info" name="health_info" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success">Add Member</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-hover rounded-shadow" id="activeTable">
+    <thead>
+      <tr>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(0)">Username <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(1)">Title <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(2)">Name <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(3)">Phone <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(4)">Membership <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(5)">Expiry Date <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(6)">Member Status <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(7)">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="activeTableBody">
+      {% for member in members %}
+      {% if member[15] == 0 %}
+      <tr class="inactive-item">
+        <td class="ml-auto text-center align-middle">{{ member[16] }}</td>
+        <td class="ml-auto text-center align-middle">{{ member[1] }}</td>
+        <td class="ml-auto text-center align-middle">{{ member[2] }} {{ member[3] }}</td>
+        <td class="ml-auto text-center align-middle">{{ member[5] }}</td>
+        <td class="ml-auto text-center align-middle">{% if member[12] == 1 %}Active{% else %}Expired{% endif %}</td>
+        <td class="ml-auto text-center align-middle">{{ member[13].strftime('%d-%m-%Y') }}</td>
+        <td class="ml-auto text-center align-middle">{% if member[15] == 1 %}Active{% else %}Inactive{% endif %}</td>
+        <td class="ml-auto text-center">
+          <div class="action-buttons">
+            <button type="button" class="btn btn-link">
+                <i class="fa-solid fa-pen-to-square icon-color"></i>
+            </button>
+            <button type="button" class="btn btn-link">
+                <i class="fa-solid fa-trash icon-color"></i>
+            </button>
+          </div>
+          <form method="POST" action="{{ url_for('manager.recover_user')}}" class="recover-btn">
+            <!-- Hidden fields to send driver id and run num to backend -->
+            <input type="hidden" name="user_id" value="{{ member[0] }}">
+            <input type="hidden" name="user_type" value="member">
+            <!-- Editable fields -->
+            <button type="submit" class="btn btn-success">Recover</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td class="ml-auto text-center align-middle">{{ member[16] }}</td>
+        <td class="ml-auto text-center align-middle">{{ member[1] }}</td>
+        <td class="ml-auto text-center align-middle">{{ member[2] }} {{ member[3] }}</td>
+        <td class="ml-auto text-center align-middle">{{ member[5] }}</td>
+        <td class="ml-auto text-center align-middle">{% if member[12] == 1 %}Active{% else %}Expired{% endif %}</td>
+        <td class="ml-auto text-center align-middle">{{ member[13].strftime('%d-%m-%Y') }}</td>
+        <td class="ml-auto text-center align-middle">{% if member[15] == 1 %}Active{% else %}Inactive{% endif %}</td>
+        <td class="ml-auto text-center">
+          <div class="action-buttons">
+                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editMemberModal{{ loop.index }}">
+                    <i class="fa-solid fa-pen-to-square icon-color"></i>
+                </button>
+                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#deleteMemberModal{{ loop.index }}">
+                    <i class="fa-solid fa-trash icon-color"></i>
+                </button>
+          </div>
+        </td>
+      </tr>
+      {% endif %}
+
+      <!--Edit Member Modal-->
+      <div class="modal fade" id="editMemberModal{{ loop.index }}" tabindex="-1" aria-labelledby="editMemberModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title text-success">Edit {{ member[2] }} {{ member[3] }}'s Profile</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('manager.update_member')  }}">
+              <div class="modal-body">
+                <!-- Hidden fields to send driver id and run num to backend -->
+                <input type="hidden" name="member_id" value="{{ member[0] }}">
+                <!-- Editable fields -->
+                <div class="row justify-content-around">
+                  <div class="form-group col-2 mb-3 ">
+                    <label for="title" class="form-label">Title</label>
+                    <select class="form-select form-control" aria-label="Default select" name="title" id="title" required>
+                      <option selected disabled value="">Select</option>
+                      {% for title in titles %}
+                      <option value="{{ title }}" {% if member[1]==title %} selected {% endif %}>{{title}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="form-group col-5 mb-3 ">
+                    <label for="first_name" class="form-label">First Name</label>
+                    <input type="text" class="form-control" name="first_name" id="first_name" value="{{ member[2] }}" required>
+                  </div>
+                  <div class="form-group col-5 mb-3 ">
+                    <label for="last_name" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" name="last_name" id="last_name" value="{{ member[3] }}" required>
+                  </div>
+                </div>
+                <div class="row justify-content-around">
+                  <div class="form-group col-4 mb-3 ">
+                    <label for="first_name" class="form-label">Position</label>
+                    <input type="text" class="form-control" name="position" id="position" value="{{ member[4] }}" required>
+                  </div>
+                  <div class="form-group col-4 mb-3 ">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="tel" pattern="[0-9]{10}" class="form-control" name="phone" id="phone"
+                      title="Please enter a vaild phone number.example: 0271231234." value="{{ member[5] }}" required>
+                  </div>
+                  <div class="form-group col-4 mb-3 ">
+                    <label for="date_of_birth" class="form-label">Date of Birth</label>
+                    <input type="date" class="form-control" name="date_of_birth" id="date_of_birth" onclick="max_date_today()"
+                      value="{{ member[8] }}" required>
+                  </div>
+                </div>
+                <div class="form-group mb-3 ">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" class="form-control" name="email" id="email" title="Please enter a vaild email."
+                    value="{{ member[6] }}" required>
+                </div>
+                <div class="form-group mb-3 ">
+                  <label for="address" class="form-label">Address</label>
+                  <input type="text" class="form-control" name="address" id="address" value="{{ member[7] }}" required>
+                </div>
+                <div class="form-group mb-3 ">
+                  <label for="health_info" class="form-label">Health Information (Optional)</label>
+                  <textarea class="form-control" id="health_info" name="health_info" rows="2">{{ member[10] }}</textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success">Save changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete Confitmation Modal -->
+      <div class="modal fade" id="deleteMemberModal{{ loop.index }}" tabindex="-1" aria-labelledby="deleteMemberModalLabel"
+        aria-hidden="true">
+        <div class="delete_modal modal-dialog modal-dialog-centered modal-m">
+          <div class="modal-content card">
+            <div class="modal-header">
+              <h5 class="modal-title">Delete</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Are you sure you want to delete Member No.{{ member[0] }}: {{ member[2] }} {{ member[3] }}?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
+              <form method="POST" action="{{ url_for('manager.delete_user')}}">
+                <!-- Hidden fields to send driver id and run num to backend -->
+                <input type="hidden" name="user_id" value="{{ member[0] }}">
+                <input type="hidden" name="user_type" value="member">
+                <!-- Editable fields -->
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </tbody>
+  </table>
+  <!-- page selection -->
+  <div class="row mb-5">
+    <div class="col-12 d-flex justify-content-end align-items-center " >
+    <p class="mb-0 text-success" style="margin-right: 5px;">Show</p>
+        <select id="pageSizeSelect" class="form-select" style="width: auto;">
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+        </select>
+    </div>
+    <div class="col-12 d-flex justify-content-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination" id="pagination">
+            <li class="page-item">
+                <a class="page-link text-success" href="#" aria-label="First" onclick="goToFirstPage()">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link text-success" href="#" aria-label="Last" onclick="goToLastPage()">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            </ul>
+        </nav>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{url_for('static', filename='script/table_functions.js')}}"></script>
+<script src="{{url_for('manager.static', filename='script/manager_profile.js')}}"></script>
+{% endblock %}

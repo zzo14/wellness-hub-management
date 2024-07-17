@@ -1,0 +1,89 @@
+{% extends 'layout.html' %}
+
+{% block title %}Update Member Profile{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('member.static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'member_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+    <div class="row py-lg-3 mx-0">
+      <div class="col-lg-6 col-md-8 mx-auto text-light">
+        <h2 class="fw-normal display-5">UPDATE PROFILE</h2>
+        <p class="lead">Update your profile here.</p>
+      </div>
+    </div>
+</section>
+
+<div class="container">
+    <form method="POST" action="{{ url_for('.manage_profile') }}" enctype="multipart/form-data" class="form-width">
+        <div class="row justify-content-around mb-3 mt-5">
+            <div class="form-group col-4">
+                <label for="title" class="fw-bold form-label">Title:</label>
+                <select name="title" class="form-select" required>                     <!-- title input -->
+                    {% for option in ["Mr.", "Mrs.", "Miss", "Ms.", "Mx.", "Dr.", "Prof."] %}
+                        <option value="{{ option }}" {% if option == member_info.title %} selected {% endif %}>{{ option }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-4">
+                <label for="first_name" class="fw-bold form-label">First Name</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ member_info.first_name }}" 
+                    title="Name must contain only alphabetic characters!" required>
+            </div>
+            <div class="form-group col-4">
+                <label for="last_name" class="fw-bold form-label">Last Name</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ member_info.last_name }}" 
+                    title="Name must contain only alphabetic characters!" required>
+            </div>
+        </div>
+        <div class="row justify-content-around mb-3">
+            <div class="form-group col-6">
+                <label for="phone" class="fw-bold form-label">Phone Number</label>
+                <input type="tel" pattern="[0-9]{10}" class="form-control" id="phone" name="phone" value="{{ member_info.phone }}" 
+                    title="Please enter a vaild phone number. Example: 0271231234." required>
+            </div>
+            <div class="form-group col-6">
+                <label for="date_of_birth" class="fw-bold form-label">Date of Birth</label>
+                <input type="date" class="form-control" name="date_of_birth" id="date_of_birth" value="{{ member_info.date_of_birth }}"
+                    onclick="max_date_today()" required>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="fw-bold form-label">Email Address</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ member_info.email }}" 
+                title="Please enter a valid title." required>
+        </div>
+        <div class="mb-3">
+            <label for="position" class="fw-bold form-label">Position</label>
+            <input type="text" class="form-control" id="position" name="position" value="{{ member_info.position }}" 
+                title="Position must contain only alphabetic characters!" required>
+        </div>
+        <div class="mb-3">
+            <label for="address" class="fw-bold form-label">Address</label>
+            <input type="text" class="form-control" name="address" id="address" value="{{ member_info.address }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="health_information" class="fw-bold form-label">Health Information (Optional)</label>
+            <textarea class="form-control" id="health_information" name="health_information" rows="2">{{ member_info.health_information }}</textarea>
+        </div>
+        <div class="mb-5">
+            <label for="profile_image" class="fw-bold form-label">Profile Image</label>
+            <input type="file" class="form-control" id="profile_image" name="profile_image" >
+        </div>
+        <div class="col-md-12 mt-5 text-center">
+            <button type="submit" class="btn btn-success mb-5">Update Profile</button>
+        </div>
+    </form>
+    <br />  
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{url_for('auth.static', filename='script/auth.js')}}"></script>
+{% endblock %}

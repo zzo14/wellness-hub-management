@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block title %}Financial Report{% endblock %}
+
+{% block navbar %}
+{% include 'manager_navbar.html' %}
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/list.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mb-5 mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+    <div class="row py-lg-3 mx-0">
+      <div class="col-lg-6 col-md-8 mx-auto text-light">
+        <h2 class="fw-normal display-5">FINANCIAL REPORT</h2>
+        <p class="lead">Monitor financial performance and revenue trends to ensure effective management of financial resources.</p>
+      </div>
+    </div>
+  </section>
+
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-2 text-start">
+            <select id="yearSelector" class="form-select" onchange="updateFinancialCharts()">
+            </select>
+        </div>
+    </div>
+    <div class="row mb-5">
+        <div class="col-8">
+            <h2 class="fw-light my-0 mb-5 text-success">Monthly Revenue Bar Chart</h2>
+            <canvas id="monthlyRevenueBarChart" width="400" height="200"></canvas>
+        </div>
+        <div class="col-4">
+            <h2 class="fw-light my-0 mb-5 text-success">Annual Revenue Pie Chart</h2>
+            <canvas id="annualRevenuePieChart" width="100" height="100"></canvas>
+            <div class="text-center" id="annualTotalRevenue"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="text/javascript">
+    var financialReportData = {{ financial_reports | tojson | safe }};
+</script>
+<script src="{{url_for('manager.static', filename='script/manager_financial_charts.js')}}"></script>
+{% endblock %}

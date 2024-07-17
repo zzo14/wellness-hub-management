@@ -1,0 +1,114 @@
+/* password input */
+.input-group {
+    position: relative;
+}
+
+.input-group-append {
+    position: absolute;
+    right: 10px;
+    top: 6px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.input-group .form-control {
+    padding-right: 30px;
+}
+
+.tooltip {
+    display: none;
+    position: absolute;
+    opacity: 1;
+    background-color: #f9f9f9;
+    border: 1px solid #d3d3d3;
+    padding: 5px;
+    border-radius: 3px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    top: 100%;
+    left: 0;
+    z-index: 10;
+}
+
+/* End - password input */
+
+/* inactive_item */
+.inactive-item {
+    position: relative;
+}
+
+.inactive-item::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1;
+}
+
+.inactive-item:hover::after {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.recover-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.inactive-item:hover .recover-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* End - inactive_item */
+
+/* for table to omit the long text */
+.long-text {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* End - for table to omit the long text */
+
+.width-table {
+    width: 60%; 
+    margin: auto; 
+  }
+  
+  .rounded-shadow {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 15px;
+    overflow: hidden; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  }
+  
+  th { 
+    font-size: 24px; 
+    font-weight: normal;
+  }
+  
+  td {
+    padding-left: 100px !important;
+  }
+  
+  .form-width {
+    max-width: 50%; 
+    margin: auto; 
+  }
+  
+  .form-label {
+    color:#198754
+  }
+

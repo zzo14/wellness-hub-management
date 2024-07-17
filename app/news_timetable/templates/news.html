@@ -1,0 +1,170 @@
+{% extends 'layout.html' %}
+
+{% block title %}Latest News{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('news_timetable.static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'news_timetable_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<!--Header-->
+<section class="py-3 text-center container-fluid mb-4 mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+  <div class="row py-lg-3 mx-0">
+    <div class="col-lg-6 col-md-8 mx-auto text-light">
+      {% if role == 'manager' %}
+      <h2 class="fw-normal display-5">MANAGE NEWS</h2>
+      <p class="lead">Manage news items to keep members informed and engaged.</p>
+      {% else %}
+      <h2 class="fw-normal display-5">NEWS</h2>
+      <p class="lead">Welcome to our Journal, here's where you'll find the latest news from our clubs, research from the fitness industry, recipes, inspiration and more</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+
+<div class="container mb-5">
+  <!-- Conditionally display the Add News button for managers -->
+  {% if role == 'manager' %}
+  <div class="text-end mb-3">
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addNewsModal">Add News</button>
+  </div>
+  {% endif %}
+  <div class="row mb-2">
+    {% for news in news_items %}
+        <div class="col-md-6">
+          <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative" data-bs-toggle="modal" data-bs-target="#newsModal{{ loop.index }}">
+            {% if role == 'manager' %}
+            <div class="action-buttons" style="position: absolute; top: 200px; left: 220px; z-index: 2;">
+              <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editNewsModal{{ loop.index }}">
+                  <i class="fa-solid fa-pen-to-square icon-color"></i>
+              </button>
+              <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#deleteNewsModal{{ loop.index }}">
+                  <i class="fa-solid fa-trash icon-color"></i>
+              </button>
+            </div>
+            {% endif %}
+            <div class="col p-4 d-flex flex-column position-static">
+              <strong class="d-inline-block mb-2 text-success">Club News</strong>
+              <h3 class="mb-0">{{ news[0] }}</h3>
+              <div class="mb-1 text-body-secondary">{{ news[2].strftime('%d-%m-%Y') }}</div>
+              <p class="card-text mb-3 truncate-text">{{ news[1] }}</p>
+              <div class="mb-3 text-body-secondary">Published by {{ news[3] }} {{ news[4] }}</div>
+              <button type="button" class="btn custom-button btn-success" style="width: 150px;" data-bs-toggle="modal" data-bs-target="#newsModal{{ loop.index }}">Read More</button>
+            </div>
+          </div>
+        </div>
+
+        <!--Edit Room Modal-->
+        <div class="modal fade" id="editNewsModal{{ loop.index }}" tabindex="-1" aria-labelledby="editNewsModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title text-success">Edit NEWS {{news[0]}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form method="POST" action="{{ url_for('news_timetable.update_news') }}">
+                <div class="modal-body">
+                  <!-- Hidden fields to send driver id and run num to backend -->
+                  <input type="hidden" name="news_id" value="{{ news[5] }}">
+                  <!-- Editable fields -->
+                  <div class="mb-3">
+                    <label for="newsTitle" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="newsTitle" name="title" value="{{news[0]}}" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="newsContent" class="form-label">Content</label>
+                    <textarea class="form-control" id="newsContent" name="content" rows="4" required>{{news[1]}}</textarea>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-success">Edit NEWS</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete Confitmation Modal -->
+        <div class="modal fade" id="deleteNewsModal{{ loop.index }}" tabindex="-1" aria-labelledby="deleteNewsModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-m">
+            <div class="modal-content card">
+              <div class="modal-header">
+                <h5 class="modal-title">Confirm delete NEWS {{news[0]}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to delete News: {{news[0]}}?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
+                <form method="POST" action="{{ url_for('news_timetable.delete_news')}}">
+                  <!-- Hidden fields to send driver id and run num to backend -->
+                  <input type="hidden" name="news_id" value="{{ news[5] }}">
+                  <!-- Editable fields -->
+                  <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+    {% endfor %}
+  </div>
+  
+  
+<!-- Add News Modal (for managers only) -->
+{% if role == 'manager' %}
+<div class="modal fade" id="addNewsModal" tabindex="-1" aria-labelledby="addNewsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-success" id="addNewsModalLabel">Add News Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('news_timetable.add_news') }}" method="post">
+          <div class="mb-3">
+            <label for="newsTitle" class="form-label">Title</label>
+            <input type="text" class="form-control" id="newsTitle" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="newsContent" class="form-label">Content</label>
+            <textarea class="form-control" id="newsContent" name="content" rows="3" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- News Content Modals -->
+{% for news in news_items %}
+<div class="modal fade" id="newsModal{{ loop.index }}" tabindex="-1" aria-labelledby="newsModalLabel{{ loop.index }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <button type="button" class="btn-close ms-auto me-3 mt-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title text-success" id="newsModalLabel{{ loop.index }}">{{ news[0] }}</h2>
+          <p class="text-muted fst-italic">{{ news[2].strftime('%d-%m-%Y') }}</p>
+        </div>
+      </div>
+      <div class="modal-body">
+        {{ news[1] }}
+      </div>
+      <div class="modal-footer">
+        Article by {{ news[3] }} {{ news[4] }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

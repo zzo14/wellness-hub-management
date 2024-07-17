@@ -1,0 +1,295 @@
+{% extends 'layout.html' %}
+
+{% block title %}Class Timetable Management{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/fullcalendar@5/main.min.css">
+<link rel="stylesheet" href="{{ url_for('news_timetable.static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'news_timetable_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mb-5 mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+    <div class="row py-lg-3 mx-0">
+      <div class="col-lg-6 col-md-8 mx-auto text-light">
+        <h2 class="fw-normal display-5">MANAGE CLASS TIMETABLE</h2>
+        <p class="lead">Oversee and adjust class timings to accommodate both therapists' and members' schedules, ensuring optimal workflow and client satisfaction.</p>
+      </div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class=row>
+                <div class="col-8">
+                    <input type="text" id="filterInput" class="form-control mb-3" onkeyup="serachFilterTimetable()" placeholder="Search...">
+                </div>
+                <div class="col-4 text-end">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addClassModal">
+                        New Class
+                    </button>
+                </div>
+            </div>
+
+            <!--Add class Modal-->
+            <div class="modal fade" id="addClassModal" tabindex="-1" aria-labelledby="addClassModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-success">Add New Class</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="{{ url_for('news_timetable.update_class') }}">
+                            <div class="modal-body">
+                                <!-- Editable fields -->
+                                <div class="form-group mb-3 ">
+                                    <label for="class_name" class="form-label">Class Name</label>
+                                    <input type="text" class="form-control" name="class_name" id="class_name" required>
+                                </div>
+                                <div class="form-group mb-3 ">
+                                    <label for="class_description" class="form-label">Class Description</label>
+                                    <textarea class="form-control" id="class_description" name="class_description" rows="2"
+                                        required></textarea>
+                                </div>
+                                <div class="form-group mb-3 ">
+                                    <label for="start_time" class="form-label">Start Time(Duration: 60mins)</label>
+                                    <input type="time" class="form-control" id="start_time" name="start_time" min="09:00" max="18:00"
+                                        required>
+                                </div>
+                                <div class="form-group mb-3 ">
+                                    <p class="text-success">Please choose weekdays you want to repeat for class: </p>
+                                    {% for weekday in weekdays %}
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="repeat_days" id="{{ weekday }}"
+                                            value="{{ weekday }}">
+                                        <label class="form-check-label" for="{{ weekday }}">{{ weekday }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="row justify-content-around">
+                                    <div class="form-group col-6 mb-3 ">
+                                        <label for="therapist" class="form-label">Therapist</label>
+                                        <select class="form-select" id="therapist" name="therapist" required>
+                                            <option selected disabled value="">Allocate therapist...</option>
+                                            {% for therapist in therapists %}
+                                            <option value="{{ therapist[0] }}">{{ therapist[1] }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-6 mb-3 ">
+                                        <label for="room" class="form-label">Room</label>
+                                        <select class="form-select" id="room" name="room" required>
+                                            <option selected disabled value="">Choose room...</option>
+                                            {% for room in rooms %}
+                                            <option value="{{ room[0] }}">{{ room[1] }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-success">Add New Class</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table table-hover rounded-shadow" id="activeTable">
+                <thead>
+                    <tr>
+                        <th class="ml-auto text-center" scope="col" onclick="sortTable(0)">Class ID <i
+                                class="fa-solid fa-sort sort-icon icon-color"></i></th>
+                        <th class="ml-auto text-center" scope="col" onclick="sortTable(1)">Name <i 
+                            class="fa-solid fa-sort sort-icon icon-color"></i>
+                        </th>
+                        <th class="ml-auto text-center" scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="activeTableBody">
+                    {% for class in classes %}
+                    <tr>
+                        <td class="ml-auto text-center align-middle">{{ class[0] }}</td>
+                        <td class="ml-auto text-center align-middle">{{ class[2] }}</td>
+                        <td class="ml-auto text-center">
+                            <div class="row">
+                                <div class="col-5">
+                                    <button type="button" class="btn btn-link btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#editClassModal{{ loop.index }}">
+                                        <i class="fa-solid fa-pen-to-square icon-color"></i>
+                                    </button>
+                                </div>
+                                <div class="col-5">
+                                    <button type="button" class="btn btn-link btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#deleteClassModal{{ loop.index }}">
+                                        <i class="fa-solid fa-trash icon-color"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!--Edit Member Modal-->
+                    <div class="modal fade" id="editClassModal{{ loop.index }}" tabindex="-1" aria-labelledby="editClassModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title text-success">Edit {{class[2]}}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="POST" action="{{ url_for('news_timetable.update_class') }}">
+                                    <div class="modal-body">
+                                        <!-- Hidden fields to send driver id and run num to backend -->
+                                        <input type="hidden" name="class_id" value="{{ class[0] }}">
+                                        <input type="hidden" name="class_type_id" value="{{ class[1] }}">
+                                        <!-- Editable fields -->
+                                        <div class="form-group mb-3 ">
+                                            <label for="class_name" class="form-label">Class Name</label>
+                                            <input type="text" class="form-control" name="class_name" id="class_name" value="{{class[2]}}"
+                                                required>
+                                        </div>
+                                        <div class="form-group mb-3 ">
+                                            <label for="class_description" class="form-label">Class Description</label>
+                                            <textarea class="form-control" id="class_description" name="class_description" rows="2"
+                                                required>{{class[3]}}</textarea>
+                                        </div>
+                                        <div class="form-group mb-3 ">
+                                            <label for="start_time" class="form-label">Start Time(Duration: 60mins)</label>
+                                            <input type="time" class="form-control" id="start_time" name="start_time" min="09:00"
+                                                max="18:00" value="{{class[4]}}" required>
+                                        </div>
+                                        <div class="form-group mb-3 ">
+                                            <p class="text-success">Please choose weekdays you want to repeat for class: </p>
+                                            {% for weekday in weekdays %}
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name="repeat_days" id="{{ weekday }}"
+                                                    value="{{ weekday }}" {% if weekday in class[6] %} checked {% endif %}>
+                                                <label class="form-check-label" for="{{ weekday }}">{{ weekday }}</label>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="row justify-content-around">
+                                            <div class="form-group col-6 mb-3 ">
+                                                <label for="therapist" class="form-label">Therapist</label>
+                                                <select class="form-select" id="therapist" name="therapist" required>
+                                                    <option selected disabled value="">Allocate theripist...</option>
+                                                    {% for therapist in therapists %}
+                                                    <option value="{{ therapist[0] }}" {% if class[9]==therapist[0] %} selected {% endif %}>
+                                                        {{ therapist[1] }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-6 mb-3 ">
+                                                <label for="room" class="form-label">Room</label>
+                                                <select class="form-select" id="room" name="room" required>
+                                                    <option selected disabled value="">Choose room...</option>
+                                                    {% for room in rooms %}
+                                                    <option value="{{ room[0] }}" {% if class[7]==room[0] %} selected {% endif %}>{{ room[1]
+                                                        }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-success">Update Class</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delete Confitmation Modal -->
+                    <div class="modal fade" id="deleteClassModal{{ loop.index }}" tabindex="-1" aria-labelledby="deleteClassModalLabel" aria-hidden="true">
+                        <div class="delete_modal modal-dialog modal-dialog-centered modal-m">
+                            <div class="modal-content card">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Delete {{ class[2] }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete Class: {{ class[2] }}?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                        aria-label="Close">Close</button>
+                                    <form method="POST" action="{{ url_for('news_timetable.delete_class')}}">
+                                        <!-- Hidden fields to send driver id and run num to backend -->
+                                        <input type="hidden" name="class_id" value="{{ class[0] }}">
+                                        <input type="hidden" name="class_type_id" value="{{ class[1] }}">
+                                        <!-- Editable fields -->
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- page selection -->
+            <div class="row">
+                <div class="col-md-12 d-flex justify-content-start align-items-center ">
+                    <p class="mb-0 text-success" style="margin-right: 5px;">Show</p>
+                    <select id="pageSizeSelect" class="form-select" style="width: auto;">
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+                <div class="col-md-12 d-flex justify-content-center">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination" id="pagination">
+                            <li class="page-item">
+                                <a class="page-link text-success" href="#" aria-label="First" onclick="goToFirstPage()">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link text-success" href="#" aria-label="Last" onclick="goToLastPage()">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div id="calendar" class="mb-5"></div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="https://unpkg.com/fullcalendar@5/main.min.js"></script>
+<script src="{{url_for('static', filename='script/table_functions.js')}}"></script>
+<script src="{{url_for('news_timetable.static', filename='script/timetable.js')}}"></script>
+<script>
+    var classesData = {{ classes | tojson }};
+    // Get the timetable data
+    var timetableData = classesData.map(function (c) {
+        return {
+            id: c[0],
+            title: c[2],
+            daysOfWeek: convertDaysOfWeek(c[6]),
+            startTime: c[4],
+            endTime: c[5],
+            location: c[8],
+            therapistId: c[9],
+            therapist: c[10],
+        };
+    })
+
+    filterTherapistClass();
+</script>
+{% endblock %}

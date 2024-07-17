@@ -1,0 +1,86 @@
+{% extends 'layout.html' %}
+{% block title %}Therapist Dashboard{% endblock %}
+{% block head %}
+<link href="{{ url_for('therapist.static', filename='css/therapist_style.css') }}" rel="stylesheet">
+{% endblock %}
+
+
+{% block navbar %}
+<div class="collapse navbar-collapse" id="navbarNav">
+  <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+    <li class="nav-item"><a class="nav-link text-success fw-bold"><span class="ms-1">Therapist Dashboard</span></a></li>
+  </ul>
+</div>
+<div class="text-end">
+  <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-success me-2">Logout</button></a>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Sidebar -->
+<div class="sidebar">
+  <a href="{{ url_for('therapist.therapist_dashboard') }}"><span><i class="fas fa-home"></i>Dashboard</span></a>
+  <a href="{{ url_for('therapist.therapist_profile') }}"><span><i class="fas fa-user-circle"></i>Profile</span></a>
+  <a href="{{ url_for('news_timetable.timetable') }}"><span><i class="far fa-calendar-days"></i>Class Timetable</span></a>
+  <a href="{{ url_for('therapist.session_schedule') }}"><span><i class="fas fa-book-medical"></i>Session Schedule</span></a>
+  <a href="{{ url_for('manager.attendance_record') }}"><span><i class="fas fa-clipboard-user"></i>Record Attendance</span></a> 
+  <a href="{{ url_for('news_timetable.news') }}"><span><i class="fa-solid fa-newspaper"></i>News</span></a>
+</div>
+
+<section class="main-content mt-5">
+  <div class="col-lg-6 col-md-8 mx-auto">
+    <h1 class="fw-light my-0 text-center" >Welcome Back!</h1>
+    <br>
+  </div>
+  <div class="row row-cols-1 align-items-stretch g-4 py-5">
+    <div class="col">
+        <a href="{{ url_for('therapist.session_schedule') }}" class="text-decoration-none">
+            <div class="card card-cover h-100 overflow-hidden rounded-4 shadow-lg" 
+                style="background-image: url('{{ url_for('static', filename = 'image/1_manage_session.jpg')}}');">
+                <div class="d-flex flex-column h-100 p-5 pb-3 text-light text-shadow-1">
+                    <h3 class="mt-5 display-6 lh-1 fw-bold">Upcoming Sessions</h3>
+                </div>
+                <div class="card-body d-flex flex-column h-100 p-5 pb-3 text-light">
+                  {% if upcoming %}
+                      <h3 class="card-title">These are your upcoming sessions for the next 7 days:</h3><br>
+                      <ul class="card-text">
+                        {% for result in upcoming %}
+                          <li class="upcoming">{{ result[0].strftime('%d-%m-%y') }} : {{ result[1] }}</li>
+                        {% endfor %}
+                      </ul>
+                  {% else %}
+                      <h3 class="card-text">No upcoming sessions in the next 7 days</h3>
+                  {% endif %}
+                </div>
+            </div>
+        </a>
+    </div>
+  </div>
+
+<div class="row row-cols-1 row-cols-lg-2 align-items-stretch g-4 py-5">
+  <div class="col">
+      <a href="{{ url_for('news_timetable.timetable') }}" class="text-decoration-none">
+          <div class="card card-cover h-100 overflow-hidden rounded-4 shadow-lg" 
+              style="background-image: url('{{ url_for('static', filename = 'image/2_booking_details.jpg')}}');">
+              <div class="d-flex flex-column h-100 p-5 pb-3 text-light text-shadow-1">
+                  <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Class Timetable</h3>
+              </div>
+          </div>
+      </a>
+  </div>
+
+  <div class="col">
+    <a href="{{ url_for('news_timetable.news') }}" class="text-decoration-none">
+      <div class="card card-cover h-100 overflow-hidden rounded-4 shadow-lg" 
+          style="background-image: url('{{ url_for('static', filename = 'image/6_news.jpg')}}');">
+        <div class="d-flex flex-column h-100 p-5 pb-3 text-light text-shadow-1">
+            <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold"> News </h3>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+</section>        
+{% endblock %}
+
+

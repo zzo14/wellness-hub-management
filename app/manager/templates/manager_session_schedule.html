@@ -1,0 +1,337 @@
+{% extends 'layout.html' %}
+
+{% block title %}Session Schedule{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/list.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'manager_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mb-5 mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+  <div class="row py-lg-3 mx-0">
+    <div class="col-lg-6 col-md-8 mx-auto text-light">
+      <h2 class="fw-normal display-5">MANAGE SESSION SCHEDULE</h2>
+      <p class="lead">Efficiently organize and update class schedules to ensure smooth operation of all sessions throughout the week.</p>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="row align-items-center mt-3 mb-3">
+    <div class="col-auto">
+      <p class="text-success mb-0">Status Filter:</p>
+    </div>
+    <div class="col-auto">
+      <select id="sessionAvailabilityFilter" class="form-select" aria-label=".form-select">
+        <option value="all" selected>Show All</option>
+        <option value="available">Available</option>
+        <option value="fullyBooked">Fully Booked</option>
+      </select>
+    </div>
+    <div class="ms-auto col-7">
+      <input type="text" id="filterInput" class="form-control" onkeyup="searchFilterTable()" placeholder="Search...">
+    </div>
+    <div class="col-2 text-end">
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSessionModal">Add Session</button> 
+    </div>
+  </div>
+  <table class="table table-hover rounded-shadow" id="activeTable">
+    <thead>
+      <tr>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(0)">Date <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(1)">Time <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(2)">Duration <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(3)">Therapist <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(4)">Type <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(5)">Room <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(6)">Fee <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col" onclick="sortTable(7)">Status <i class="fa-solid fa-sort sort-icon"></i></th>
+        <th class="ml-auto text-center" scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="activeTableBody">
+      {% for session in sessions %}
+      <tr data-bs-toggle="modal" data-bs-target="#memberModal{{ session[0] }}">  <!-- link to view booking details -->
+        <td class="ml-auto text-center">{{ session[1].strftime('%d-%m-%Y') }}</td> 
+        <td class="ml-auto text-center">
+          {% set total_seconds_start = session[2].total_seconds() %}
+          {% set hours_start = total_seconds_start // 3600 %}
+          {% set minutes_start = (total_seconds_start % 3600) // 60 %}
+          {% set total_seconds_end = session[3].total_seconds() %}
+          {% set hours_end = total_seconds_end // 3600 %}
+          {% set minutes_end = (total_seconds_end % 3600) // 60 %}
+          {{ "%02d:%02d" | format(hours_start, minutes_start)}} - {{ "%02d:%02d" | format(hours_end, minutes_end)}}
+        </td>
+        <td class="ml-auto text-center">{{ session[4] }} minutes</td>
+        <td class="ml-auto text-center">{{ session[14] }}</td>
+        <td class="ml-auto text-center">{{ session[6] }}</td>
+        <td class="ml-auto text-center">{{ session[10] }}</td>
+        <td class="ml-auto text-center">${{ session[9] }}</td>
+        {% if session[5] == 1 %}
+        <td class="ml-auto text-center text-success">Available</td>
+        {% else %}
+        <td class="ml-auto text-center text-danger">Fully Booked</td>     
+        {% endif %}
+        <td class="ml-auto text-center">
+          <div class="action-buttons">
+            <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editSessionModal{{ session[0] }}"> <!-- link to edit new session -->
+              <i class="fa-solid fa-pen-to-square icon-color"></i>
+            </button>
+            <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#cancelSessionModal{{ session[0] }}"> <!-- link to cancel session -->
+                <i class="fa-solid fa-trash icon-color"></i>
+            </button>
+          </div>
+        </td>     
+      </tr>
+     {% endfor %}
+    </tbody>
+  </table>         
+
+<!-- Add session modal -->
+<div class="modal fade" id="addSessionModal" tabindex="-1" aria-labelledby="addSessionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-success" id="addSessionModalLabel">Add New Session</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- form for adding new session -->
+        <form method="POST" action="{{ url_for('manager.add_session') }}">
+
+          <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" name="date" min="{{ today }}"required>
+          </div>
+
+          <div class="mb-3">
+            <label for="start_time" class="form-label">Start Time</label>
+            <input type="time" class="form-control" id="start_time" name="start_time" min="09:00" max="17:15" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="end_time" class="form-label">End Time</label>
+            <input type="time" class="form-control" id="end_time" name="end_time" min="09:45" max="18:00" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="type_id" class="form-label">Type</label>
+            <select class="form-select" id="type_id" name="type_id" required>
+              <option selected disabled value="">Choose type...</option>
+              {% for type in types %}
+                  <option value="{{ type[0] }}">{{ type[1] }}</option>
+              {% endfor %}
+            </select>            
+          </div>    
+
+          <div class="mb-3">
+            <label for="room_id" class="form-label">Room</label>
+            <select class="form-select" id="room_id" name="room_id" required>
+              <option selected disabled value="">Choose room...</option>
+              {% for room in rooms %}
+                  <option value="{{ room[0] }}">{{ room[1] }}</option>
+              {% endfor %}
+            </select>          
+          </div>
+
+          <div class="mb-3">
+            <label for="therapist_id" class="form-label">Therapists</label>
+            <select class="form-select" id="therapist_id" name="therapist_id" required>
+              <option selected disabled value="">Choose therapist...</option>
+              {% for therapist in therapists %}
+                  <option value="{{ therapist[0] }}">{{ therapist[6] }} {{ therapist[7] }}</option>
+              {% endfor %}
+            </select>            
+          </div>  
+
+          <div class="mb-3">
+            <label for="price" class="form-label">Fee</label>
+            <input type="number" class="form-control" id="price" name="price" min="0" required>
+          </div>
+          <div class="button-container">
+          <button type="submit" class="btn btn-success">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Edit session modal -->
+{% for session in sessions %}
+<div class="modal fade" id="editSessionModal{{ session[0] }}" tabindex="-1" aria-labelledby="editSessionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-success" id="editSessionModalLabel">Edit Session</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- form for editing session -->
+        <form method="POST" action="{{ url_for('manager.edit_session', therapeutic_id=session[0]) }}">
+
+          <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" name="date" min="{{ today }}" value="{{ session[1] }}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="start_time" class="form-label">Start Time</label>
+            <input type="time" class="form-control" id="start_time" name="start_time" value="{{ session[2] }}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="end_time" class="form-label">End Time</label>
+            <input type="time" class="form-control" id="end_time" name="end_time" value="{{ session[3] }}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="type" class="form-label">Type</label>
+            <select class="form-select" id="type_id" name="type_id" required>
+              {% for type in types %}
+                  <option value="{{ type[0] }}" {% if type[1] == session[6] %} selected {% endif %}>{{ type[1] }}</option>
+              {% endfor %}
+            </select>           
+          </div>    
+
+          <div class="mb-3">
+            <label for="room_id" class="form-label">Room</label>
+            <select class="form-select" id="room_id" name="room_id" required>
+              {% for room in rooms %}
+                  <option value="{{ room[0] }}" {% if room[1] == session[10] %} selected {% endif %}>{{ room[1] }}</option>
+              {% endfor %}
+            </select>          
+          </div>
+
+          <div class="mb-3">
+            <label for="therapist_id" class="form-label">Therapists</label>
+            <select class="form-select" id="therapist_id" name="therapist_id" required>
+              <option selected disabled value="">Choose therapist...</option>
+              {% for therapist in therapists %}
+                  <option value="{{ therapist[0] }}" {% if therapist[0] == session[13] %} selected {% endif %}>{{ therapist[6] }} {{ therapist[7] }}</option>
+              {% endfor %}
+            </select>            
+          </div> 
+
+          <div class="mb-3">
+            <label for="price" class="form-label">Fee</label>
+            <input type="number" class="form-control" id="price" name="price" min="0" value="{{ session[9] }}" required>
+          </div>
+          <div class="button-container">
+          <button type="submit" class="btn btn-success">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<!-- Delete Session modal -->
+{% for session in sessions %}
+<div class="modal fade" id="cancelSessionModal{{ session[0] }}" tabindex="-1" aria-labelledby="cancelSessionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cancelSessionModalLabel">Cancel Session</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- form for editing session -->
+        <form method="POST" action="{{ url_for('manager.cancel_session', therapeutic_id=session[0]) }}">
+          <p>Are you sure you want to cancel this session?</p>
+          <div class="button-container">
+          <button type="submit" class="btn btn-danger ">Confirm</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+  <div class="row mb-5">
+    <div class="col-12 d-flex justify-content-end align-items-center " >
+      <p class="mb-0" style="margin-right: 5px;">Show</p>
+      <select id="pageSizeSelect" class="form-select" style="width: auto;">
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+      </select>
+    </div>
+    <div class="col-12 d-flex justify-content-center">
+      <nav aria-label="Page navigation">
+        <ul class="pagination" id="pagination">
+          <li class="page-item">
+            <a class="page-link text-success" href="#" aria-label="First" onclick="goToFirstPage()">
+              <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link text-success" href="#" aria-label="Last" onclick="goToLastPage()">
+              <span aria-hidden="true">&raquo;&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- Booking Details modal -->
+{% for session in sessions %}
+<div class="modal fade" id="memberModal{{ session[0] }}" tabindex="-1" aria-labelledby="memberModalLabel{{ session[0] }}"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="memberModalLabel{{ session[0] }}">Booking Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="/therapist/attendance/{{ session[0] }}">
+        <div class="modal-body">
+          {% if session[5] == 1 %}
+          <p>No booking details are available for this session.</p>
+          {% else %}
+          <p><strong>Name:</strong> {{ booking_member_details[session[0]][1] }} {{ booking_member_details[session[0]][2] }} {{
+            booking_member_details[session[0]][3] }}</p>
+          <p><strong>Position:</strong> {{ booking_member_details[session[0]][4] }}</p>
+          <p><strong>Phone:</strong> {{ booking_member_details[session[0]][5] }}</p>
+          <p><strong>Email:</strong> {{ booking_member_details[session[0]][6] }}</p>
+          <p><strong>Address:</strong> {{ booking_member_details[session[0]][7] }}</p>
+          <p><strong>Date of Birth:</strong> {{ booking_member_details[session[0]][8].strftime('%d-%m-%Y') }}</p>
+          <p><strong>Health Information:</strong> {{ booking_member_details[session[0]][9] }}</p>
+
+          <input type="hidden" name="therapeutic_booking_id" value="{{ session[11] }}">
+          <input type="hidden" name="member_id" value="{{ booking_member_details[session[0]][0] }}">
+          <div class="form-group">
+            <strong><label for="attendance">Record Attendance:</label></strong><br>
+            <input type="radio" id="attendance_present_{{ booking_member_details[session[0]][0] }}" name="is_attended" value="1" {% if
+              session[12]==1 %}checked{% endif %}> Present
+            <input type="radio" id="attendance_absent_{{ booking_member_details[session[0]][0] }}" name="is_attended" value="0" {% if
+              session[12]==0 %}checked{% endif %}> Absent
+          </div>
+          {% endif %}
+        </div>
+        <div class="modal-footer">
+          {% if session[5] == 0 %}
+          <button type="submit" class="btn btn-success">Record</button>
+          {% endif %}
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block script %}
+<script src="{{url_for('static', filename='script/table_functions.js')}}"></script>
+{% endblock %}

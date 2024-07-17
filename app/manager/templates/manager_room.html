@@ -1,0 +1,184 @@
+{% extends 'layout.html' %}
+
+{% block title %}Room Management{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/list.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'manager_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mb-5 mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+    <div class="row py-lg-3 mx-0">
+      <div class="col-lg-6 col-md-8 mx-auto text-light">
+        <h2 class="fw-normal display-5">MANAGE ROOMS</h2>
+        <p class="lead">Manage rooms to ensure optimal space management for classes and therapy sessions.</p>
+      </div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="row align-items-center mt-3 mb-3">
+        <div class="col-10">
+            <input type="text" id="filterInput" class="form-control" onkeyup="searchFilterTable()" placeholder="Search...">
+        </div>
+        <div class="col-2 text-end">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addRoomModal">Add Room</button>
+        </div>
+    </div>
+
+    <!--Add Room Modal-->
+    <div class="modal fade" id="addRoomModal" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-m">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-success">Add New Room</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="{{ url_for('manager.update_room') }}">
+                    <div class="modal-body">
+                        <!-- Editable fields -->
+                        <div class="form-group mb-3 ">
+                            <label class = "mb-2 text-success" for="room_name">Room Name</label>
+                            <input type="text" class="form-control" name="room_name" id="room_name" required>
+                        </div>
+                        <div class="form-group mb-3 ">
+                            <label class = "mb-2 text-success" for="room_capacity">Capacity(Max: 15)</label>
+                            <input type="number" class="form-control" name="room_capacity" id="room_capacity" min="1" max="15"
+                                title="Please enter a valid number." required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Add Room</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-hover rounded-shadow" id="activeTable">
+        <thead>
+            <tr>
+                <th class="ml-auto text-center" scope="col" onclick="sortTable(0)">Room ID <i class="fa-solid fa-sort sort-icon"></i></th>
+                <th class="ml-auto text-center" scope="col" onclick="sortTable(1)">Room Name <i class="fa-solid fa-sort sort-icon"></i></th>
+                <th class="ml-auto text-center" scope="col" onclick="sortTable(2)">Room Capacity <i class="fa-solid fa-sort sort-icon"></i></th>
+                <th class="text-center" scope="col"> Actions </th>
+            </tr>
+        </thead>
+        <tbody id="activeTableBody">
+            {% for room in rooms %}
+            <tr>
+                <td class="ml-auto text-center">{{ room[0] }}</td>
+                <td class="ml-auto text-center">{{ room[1] }}</td>
+                <td class="ml-auto text-center">{{ room[2] }}</td>
+                <td class="ml-auto text-center">
+                    <div class="action-buttons">
+                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#editRoomModal{{ loop.index }}">
+                                <i class="fa-solid fa-pen-to-square icon-color"></i>
+                            </button>
+                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#deleteRoomModal{{ loop.index }}">
+                                <i class="fa-solid fa-trash icon-color"></i>
+                            </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!--Edit Room Modal-->
+            <div class="modal fade" id="editRoomModal{{ loop.index }}" tabindex="-1" aria-labelledby="editRoomModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-m">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-success">Edit Room {{room[0]}} - {{room[1]}}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="{{ url_for('manager.update_room') }}">
+                            <div class="modal-body">
+                                <!-- Hidden fields to send driver id and run num to backend -->
+                                <input type="hidden" name="room_id" value="{{ room[0] }}">
+                                <!-- Editable fields -->
+                                <div class="form-group mb-3 ">
+                                    <label class = "mb-2 text-success"for="room_name">Room Name</label>
+                                    <input type="text" class="form-control" name="room_name" id="room_name" value="{{ room[1] }}" required>
+                                </div>
+                                <div class="form-group mb-3 ">
+                                    <label class = "mb-2 text-success" for="room_capacity">Capacity(Max: 15)</label>
+                                    <input type="number" class="form-control" name="room_capacity" id="room_capacity" min="1" max="15"
+                                        title="Please enter a valid number." value="{{ room[2] }}" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-success">Edit Room</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete Confitmation Modal -->
+            <div class="modal fade" id="deleteRoomModal{{ loop.index }}" tabindex="-1" aria-labelledby="deleteRoomModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-m">
+                    <div class="modal-content card">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirm delete Room {{room[0]}} - {{room[1]}}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete {{ room[1] }}?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
+                            <form method="POST" action="{{ url_for('manager.delete_room')}}">
+                                <!-- Hidden fields to send driver id and run num to backend -->
+                                <input type="hidden" name="room_id" value="{{ room[0] }}">
+                                <!-- Editable fields -->
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- page selection -->
+    <div class="row mb-5">
+        <div class="col-12 d-flex justify-content-end align-items-center " >
+        <p class="mb-0 text-success" style="margin-right: 5px;">Show</p>
+            <select id="pageSizeSelect" class="form-select" style="width: auto;">
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+            </select>
+        </div>
+        <div class="col-12 d-flex justify-content-center">
+            <nav aria-label="Page navigation">
+                <ul class="pagination" id="pagination">
+                <li class="page-item">
+                    <a class="page-link text-success" href="#" aria-label="First" onclick="goToFirstPage()">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link text-success" href="#" aria-label="Last" onclick="goToLastPage()">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{url_for('static', filename='script/table_functions.js')}}"></script>
+{% endblock %}

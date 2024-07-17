@@ -1,0 +1,13 @@
+<div class="collapse navbar-collapse" id="navbarNav">
+  <ul class="navbar-nav mb-2 mb-lg-0"> <!-- navigation links  -->
+    <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('therapist.therapist_dashboard') }}">Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('therapist.therapist_profile') }}">Profile</a></li>
+    <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('news_timetable.timetable') }}">Class Timetable</a></li>
+    <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('therapist.session_schedule') }}">Session Schedule</a></li>
+    <li class="nav-item"><a class="nav-link text-success" href="{{ url_for('manager.attendance_record') }}">Record Attendance</a></li>
+    <li class="nav-item"><a class="nav-link text-success"  href="{{ url_for('news_timetable.news') }}">News</a></li>
+  </ul>
+</div>
+<div class="text-end">
+  <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-success me-2">Logout</button></a>
+</div>

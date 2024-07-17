@@ -1,0 +1,99 @@
+{% extends 'layout.html' %}
+
+{% block title %}Therapist Profile{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/list.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'therapist_navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="py-3 text-center container-fluid mb-5 mt-4" style="background-image: linear-gradient(to right, #198754, #70c286);">
+    <div class="row py-lg-3 mx-0">
+        <div class="col-lg-6 col-md-8 mx-auto text-light">
+            <h2 class="fw-normal display-5">MANAGE PROFILE</h2>
+            <p class="lead">Manage your profile and password here.</p>
+        </div>
+    </div>
+</section>
+<div class="container mt-3">
+    <table class="table width-table rounded-shadow">
+        <thead>
+            <tr>
+                <th colspan="2" class="text-center text-white bg-success">Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="text-success"><strong>Profile Image:</strong></td>
+                {% if therapist[14] %}
+                <td>
+                    <img src="{{ url_for('static', filename='image/profile_image/' + therapist[14]) }}" alt="Profile Image"
+                        class="rounded-circle" style="width: 50px; height: 50px;">
+                </td>
+                {% else %}
+                <td>
+                    <img src="{{ url_for('static', filename='image/profile_image/default_profile.jpg') }}" alt="Profile Image"
+                        class="rounded-circle" style="width: 50px; height: 50px;"></td>
+                </td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td class="text-success"><strong>Username:</strong></td>
+                <td>{{ therapist[1] }}</td>
+            </tr>
+            <tr>
+                <td class="text-success"><strong>User Type:</strong></td>
+                <td>{{ therapist[3] }}</td>
+            </tr>
+            <tr>
+                <td class="text-success"><strong>Status:</strong></td>
+                {% if therapist[16] == 1 %}
+                <td class="text-success">Active</td> <!-- display green if active -->
+                {% else %}
+                <td class="text-danger">Inactive</td> <!-- display red if inactive -->
+                {% endif %}
+            </tr>
+            <tr>
+                <td class="text-success"><strong>Title:</strong></td>
+                <td>{{ therapist[5] }}</td>
+            </tr>
+            <tr>
+                <td class="text-success"><strong>First Name:</strong></td>
+                <td style="text-transform: capitalize;">{{ therapist[6] }}</td>
+            </tr>
+            <tr>
+                <td class="text-success"><strong>Last Name:</strong></td>
+                <td style="text-transform: capitalize;">{{ therapist[7] }}</td>
+            </tr>
+            <tr>
+                <td class="text-success"><strong>Position:</strong></td>
+                <td style="text-transform: capitalize;">{{ therapist[8] }}</td>
+            </tr>
+            <tr>
+                <td class="text-success"><strong>Phone:</strong></td>
+                <td>{{ therapist[9] }}</td>
+            </tr>
+            <tr>
+                <td class="text-success"><strong>Email:</strong></td>
+                <td>{{ therapist[10] }}</td>
+            </tr>
+            <tr>
+                <td class="text-success"><strong>Therapist Profile:</strong></td>
+                <td>{{ therapist[13] }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="col-md-12 mt-5 mb-5 text-center">
+        <div class="d-flex justify-content-center">
+            <form action="{{ url_for('therapist.update_therapist_profile') }}" method="get" class="me-2">
+                <button type="submit" class="btn btn-success">Update Profile</button>
+            </form>
+            <a href="{{ url_for('auth.change_password') }}" class="btn btn-success ms-2">Change Password</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

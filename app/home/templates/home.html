@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en" data-bs-theme="auto">
+<head>
+    <script src="/docs/5.3/assets/js/color-modes.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="generator" content="Hugo 0.122.0">
+    <title>High Country Health and Wellness Hub Management System</title>
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/carousel/">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/fullcalendar@5/main.min.css">
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+</head>
+<body>
+  <header class="p-3 bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a href="/" class="navbar-brand">
+                <img src="{{ url_for('static', filename='image/logo_2.svg') }}" width="140" height="40" alt="Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHome" aria-controls="navbarHome" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarHome">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a href="{{ url_for('home.home') }}" class="nav-link px-2 text-success">Home</a></li>
+                    <li class="nav-item"><a href="{{ url_for('news_timetable.timetable') }}" class="nav-link px-2 text-success">Class</a></li>
+                    <li class="nav-item"><a href="{{ url_for('member.therapist_list') }}" class="nav-link px-2 text-success">Therapist</a></li>
+                    <li class="nav-item"><a href="{{ url_for('home.price') }}" class="nav-link px-2 text-success">Memberships</a></li>
+                    <li class="nav-item"><a href="{{ url_for('news_timetable.news') }}" class="nav-link px-2 text-success">News</a></li>
+                    <!-- Add more nav items as needed -->
+                </ul>
+
+                <div class="text-end">
+                  <a href="{{ url_for('auth.login') }}"><button type="button" class="btn btn-outline-success me-2">Login</button></a>
+                  <a href="{{ url_for('auth.register') }}"><button type="button" class="btn btn-success">Join</button></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+  </header>
+   
+  <!-- Carousel -->
+  <div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="{{ url_for('static', filename='image/hero_image_1.png') }}" class="d-block w-100" alt="Hero_Image_1">
+          <div class="container">
+            <div class="carousel-caption text-start">
+              <h1>Wellness. Redefined</h1>
+              <p class="opacity-75">Find your path to wellness in the heart of the high country.</p>
+              <p><a class="btn btn-md btn-success" href="{{ url_for('auth.register') }}">Sign up today</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="{{ url_for('static', filename='image/hero_image_2.png') }}" class="d-block w-100" alt="Hero_Image_2">
+          <div class="container justify-content-center">
+            <div class="carousel-caption">
+              <h1>Start Well. Stay Well.</h1>
+              <p>Start Your Journey for Only $200/month! Subscribe to Personalised Wellness.</p>
+              <p><a class="btn btn-md btn-success" href="{{ url_for('home.price') }}">Learn more</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+  </div>
+
+  <!-- About Us -->
+  <div class="container col-xxl-8 px-4 py-5">
+    <div class="row flex-lg-row-reverse align-items-center g-5 py-3">
+      <div class="col-lg-6">
+        <h1 class="display-5 fw-bold text-custom-color lh-1 mb-3">Why Join the High Country Health and Wellness Hub?</h1>
+        <p class="lead">
+          At the High Country Health and Wellness Hub, located in the serene high-country of Canterbury, we provide a unique and holistic approach to your health and well-being.
+          Positioned on a picturesque farm, our hub not only offers breathtaking views but also an array of health and wellness classes and therapeutic sessions tailored to rejuvenate your mind, body, and spirit.
+        </p>
+      </div>
+      <div class="col-10 col-sm-8 col-lg-6">
+        <img src="{{ url_for('static', filename='image/home_about_us.jpg') }}" class="d-block mx-lg-auto img-fluid" alt="About Us" width="400" height="700" loading="lazy">
+      </div>
+    </div>
+  </div>
+
+  <!-- Class Introduction -->
+  <div class="container-fluid bg-custom-color">
+    <div class="row justify-content-center py-lg-5">
+      <div class="col-sm-8 col-md-7 py-4 text-center">
+        <h1 class="display-5 fw-bold my-0 mb-3 text-success">Discover Our Classes</h1>
+        <p class="lead mx-5">Choose from a wide variety of classes including tai chi, pilates, yoga, meditation, and more.</p>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      {% for info in class_info %}
+      <div class="col-auto">
+          <div class="card mb-5 mx-3" style="width: 25rem; height:28rem">
+              <img src="{{ url_for('static', filename='image/home_class_' ~ loop.index ~ '.jpg') }}" class="card-img-top" alt="{{ info[1] }}"
+                onerror="this.onerror=null; this.src='{{ url_for('static', filename='image/bg_image.jpg') }}'">
+              <div class="card-body">
+                  <h5 class="card-text fw-bold text-success">{{ info[1] }}</h5>
+                  <p class="card-text">{{ info[2] }}</p>
+              </div>
+          </div>
+      </div>
+      {% else %}
+      <p class="text-center">No classes available at the moment.</p>
+      {% endfor %}
+    </div>
+  </div>
+  
+  <!-- Therapy Offering -->
+    <div class="container px-4 py-4 mt-5">
+      <h1 class="display-5 fw-bold my-0 mb-3 text-custom-color">Theraputic Sessions</h1>
+      <p class="lead">Customise your healing with one-on-one sessions in acupuncture, massage, reiki, and more.</p>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 py-5">
+        {% for session in sessions %}
+        <div class="col d-flex align-items-start">
+          <div>
+            <h3 class="fw-bold mb-0 fs-4 text-title-color">{{ session[1] }}</h3>
+            <p>{{ session[2] }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  
+  
+  <!-- Timetable -->
+  <hr class="featurette-divider">
+  <div class="row justify-content-center">
+    <div class="col-sm-8 col-md-7 py-4 text-center">
+        <h1 class="display-5 fw-bold text-custom-color mt-3 mb-5">Explore Our Timetable</h1>
+        <p class="lead px-5">Discover the perfect class or session with our flexible timetable, available from 9 AM to 7 PM daily. Book your preferred time for anything from morning meditation to evening yoga.</p>
+    </div>
+  </div>
+  <div class="container bg-custom-color">
+    <div id="calendar" class="mt-5 mb-5"></div>
+    <div class="d-flex justify-content-center">
+      <button type="button" class="btn custom-button btn-success mb-5" onclick="location.href='{{ url_for('auth.register') }}';">Secure Your Spot</button>
+    </div>
+  </div>
+  
+  <!-- Therapist List -->
+  <div class="container">
+    <div class="row justify-content-center">
+        <div class="col-sm-8 col-md-7 py-4 text-center">
+            <h1 class="display-5 fw-bold text-custom-color mt-5 mb-5">Meet Our Professional Therapists</h1>
+            <p class="lead px-5">Our therapists specialize in a range of disciplines, from acupuncture and Swedish massage to reiki and wellness coaching. Discover more about our team and find the perfect therapist to guide your wellness journey.</p>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        {% for therapist in therapists %}
+        {% if therapist[0] == 'therapist' %}
+        <div class="col-lg-4 d-flex flex-column align-items-center text-center">
+            <img src="{{ url_for('static', filename='image/profile_image/' + therapist[4]) }}" 
+                 class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto rounded-circle" 
+                 width="140" 
+                 height="140" 
+                 role="img" 
+                 aria-label="Placeholder: 140x140" 
+                 preserveAspectRatio="xMidYMid slice" 
+                 alt="{{ therapist[1] }}">
+            <h4 class="fw-normal mt-3 text-success">{{ therapist[1] }} {{ therapist[2] }}</h4>
+            <p>{{ therapist[3] }}</p>
+            <button type="button" class="btn custom-button btn-custom-color mb-5" onclick="location.href='{{ url_for('member.therapist_list') }}';">View Details</button>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+  </div>
+</body>
+
+  <!-- FOOTER -->
+  <div class="container-fluid bg-success">
+    <footer class="row py-5 my-5">
+        <div class="col-md-1"></div> 
+        
+        <div class="col-md-2 mb-3">
+            <a href="/" class="d-flex align-items-center mb-3 link-body-emphasis text-decoration-none">
+                <img src="{{ url_for('static', filename='image/logo_2.svg') }}" alt="Logo" class="white-logo">
+            </a>
+            <p class="text-light">&copy; 2024 by High Country</p>
+        </div>
+
+        <div class="col-md-2"></div> 
+
+        <div class="col-md-2 mb-3"> 
+            <h5 class="text-light">Menu</h5>
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2"><a href="{{ url_for('home.home') }}" class="nav-link p-0 text-light">Home</a></li>
+                <li class="nav-item mb-2"><a href="{{ url_for('home.price') }}"  class="nav-link p-0 text-light">Pricing</a></li>
+                <li class="nav-item mb-2"><a href="{{ url_for('home.home') }}" class="nav-link p-0 text-light">FAQs</a></li>
+                <li class="nav-item mb-2"><a href="{{ url_for('home.home') }}" class="nav-link p-0 text-light">About</a></li>
+            </ul>
+        </div>
+
+        <div class="col-md-2 mb-3"> 
+            <h5 class="text-light">Socials</h5>
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-light">Facebook</a></li>
+                <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-light">Instagram</a></li>
+                <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-light">Youtube</a></li>
+            </ul>
+        </div>
+
+        <div class="col-md-2 mb-3"> 
+            <h5 class="text-light">Contact US</h5>
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2 text-light">Tel: 123-456-7890</li>
+                <li class="nav-item mb-2 text-light">Email: info@high-country.com</li>
+                <li class="nav-item mb-2 text-light">500 Terry Francine St<br> Christchurch, NZ 12345</li>
+            </ul>
+        </div>
+
+        <div class="col-md-1"></div> 
+    </footer>
+</div>
+
+  
+
+
+<!-- SCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/fullcalendar@5/main.min.js"></script>
+<script src="{{url_for('news_timetable.static', filename='script/timetable.js')}}"></script>
+<script>
+    var classesData = {{ classes | tojson }};
+    var classRemainSlots = {{ remaining_slots | tojson }};
+    var timetableData = classesData.map(function(c) {
+        return {
+            id: c[0],
+            title: c[1],
+            daysOfWeek: convertDaysOfWeek(c[5]),
+            startTime: c[3],
+            endTime: c[4],
+            description: c[2],
+            location: c[6],
+            therapistId: c[7],
+            therapist: c[8],
+            position: c[9],
+            profile: c[10],
+            profileImage: c[11]
+        };
+    });
+
+    filterTherapistClass();
+  </script>
+</body>
+</html>
